@@ -20,6 +20,10 @@
 
         public class Cliente : Usuario
         {
+            public Cliente(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia)
+            {
+            }
+
             public decimal Billetera { get; set; }
         }
 
