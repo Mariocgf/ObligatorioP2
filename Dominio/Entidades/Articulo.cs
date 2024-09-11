@@ -2,7 +2,7 @@
 {
     public class Articulo
     {
-        public static int IdCount { get; set; }
+        private static int IdCount { get; set; }
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Categoria { get; set; }
@@ -16,14 +16,14 @@
             Precio = precio;
         }
 
-        public static void ValidarCaracteres(string letra, string tipo)
+        public void ValidarCaracteres(string letra, string tipo)
         {
             // 32 38-46 65-90 97-122 espacio y caracteres (mayusculas y minusculas)
             // (225-233-237-243-250) = á, é, í, ó, ú
             // (193-201-205-211-218) =  Á, É, Í, Ó, Ú
             // (209-241) = ñ, Ñ
 
-            int[] caracteresEspeciales = new int[] { 32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250 };
+            int[] caracteresEspeciales = [32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250];
             int cont = 0;
             foreach (char c in letra)
             {
@@ -34,10 +34,10 @@
             }
             if (cont != letra.Length)
             {
-                throw new Exception($"E-Caracter{tipo}:Palabra con caracter/es invalido/s");
+                throw new Exception($"E-Caracter{tipo}:{tipo} cuenta con caracter/es invalido/s");
             }
         }
-        private static void ValidarPrecio(decimal precio)
+        private void ValidarPrecio(decimal precio)
         {
             if (precio < 0)
             {
@@ -45,16 +45,26 @@
             }
         }
 
-        public static void Validar(string nombre, string categoria ,decimal precio)
+        public void Validar()
         {
-            ValidarCaracteres(nombre, "Nombre");
-            ValidarCaracteres(categoria, "Categoria");
-            ValidarPrecio(precio);
+            ValidarCaracteres(Nombre, "Nombre");
+            ValidarCaracteres(Categoria, "Categoria");
+            ValidarPrecio(Precio);
         }
 
         public override string ToString()
         {
-            return $"ID: {Id}\nNombre: {Nombre}\nCategoria: {Categoria}\nPrecio: {Precio}\n";
+            return $"" +
+                $"ID: {Id}\n" +
+                $"Nombre: {Nombre}\n" +
+                $"Categoria: {Categoria}\n" +
+                $"Precio: {Precio}\n";
+        }
+
+        public override bool Equals(object? obj)
+        {
+            Articulo articulo = obj as Articulo;
+            return articulo != null && Nombre.ToUpper() == articulo.Nombre.ToUpper();
         }
     }
 }

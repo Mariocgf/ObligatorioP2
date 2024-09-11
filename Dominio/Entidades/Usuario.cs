@@ -2,7 +2,7 @@
 {
     public class Usuario
     {
-        public static int IdCount { get; set; }
+        private static int IdCount { get; set; }
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
