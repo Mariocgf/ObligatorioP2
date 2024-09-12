@@ -18,6 +18,8 @@ namespace Dominio.Entidades
             FechaPublicacion = fechaPublicacion;
             _articulos = articulos;
         }
+        
+
         private void ValidarEstado(string estado)
         {
             string[] estados = ["ABIERTA", "CERRADA", "CANCELADA"];

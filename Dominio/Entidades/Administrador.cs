@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dominio.Entidades
 {
-    public class Subasta
+    public class Administrador
     {
-        private List<Oferta> _ofertas = new List<Oferta>();
-
-        public class Subasta : Publicacion
-        {
-
-        }
     }
 }
