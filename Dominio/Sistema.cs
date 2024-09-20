@@ -19,13 +19,27 @@ namespace Dominio
         {
             _usuarios.Add(usuario);
         }
-        public void AgregarPublicacion(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos)
+        public void AgregarPublicacion(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta)
         {
             if(articulos.Count == 0)
             {
                 throw new Exception("E-PubliArticuloVacio:Ingrese articulos para crear la publicacion.");
             }
-            Publicacion publicacion = new Publicacion(nombre, estado, fechaPublicacion, articulos);
+            Publicacion publicacion = new Venta(nombre, estado, fechaPublicacion, articulos, enOferta);
+            if (publicacion == null)
+            {
+                throw new Exception("E-PubliInvalido:Publicacion invalida. Intente de nuevo.");
+            }
+            publicacion.Validar();
+            _publicaciones.Add(publicacion);
+        }
+        public void AgregarPublicacion(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos)
+        {
+            if (articulos.Count == 0)
+            {
+                throw new Exception("E-PubliArticuloVacio:Ingrese articulos para crear la publicacion.");
+            }
+            Publicacion publicacion = new Subasta(nombre, estado, fechaPublicacion, articulos);
             if (publicacion == null)
             {
                 throw new Exception("E-PubliInvalido:Publicacion invalida. Intente de nuevo.");

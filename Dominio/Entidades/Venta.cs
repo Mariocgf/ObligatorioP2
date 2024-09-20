@@ -1,13 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dominio.Entidades
+﻿namespace Dominio.Entidades
 {
-    public class Venta
+    public class Venta : Publicacion
     {
-        public bool EnOfertaRelampago;
+        public bool EnOfertaRelampago { get; set; }
+
+        public Venta(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
+        {
+            EnOfertaRelampago = enOferta;
+        }
+        public override decimal Monto()
+        {
+            decimal total = 0;
+            foreach (Articulo articulo in base.Articulos)
+            {
+                total += articulo.Precio;
+            }
+            if (EnOfertaRelampago)
+            {
+                return total - total * 0.20m;
+            }
+            return total;
+        }
+
+        public override string ToString()
+        {
+            return $"" +
+                $"{base.ToString()}\n" +
+                $"Monto: {Monto()}\n" +
+                $"En oferta: {(EnOfertaRelampago ? "Si" : "No")}\n";
+        }
+
     }
 }

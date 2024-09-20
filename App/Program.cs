@@ -11,14 +11,17 @@ namespace App
         {
             bool exit = false;
             CargaArticulos();
+            CargarPublicaciones();
             do
             {
                 Console.WriteLine("" +
                     "1) Lista de cliente.\n" +
                     "2) Buscar articulo por categoria.\n" +
                     "3) Alta de articulo.\n" +
-                    "4) Listar articulos - Prueba");
-                switch (InputNumber("Seleccione una opcion ó 0 para salir", 4))
+                    "4) Listar articulos - Prueba\n" +
+                    "5) Test listado de publicacion\n" +
+                    "6) Test listado de publicacion");
+                switch (InputNumber("Seleccione una opcion ó 0 para salir", 6))
                 {
                     case 2:
                         ListarArticulosXCat();
@@ -28,6 +31,10 @@ namespace App
                         break;
                     case 4:
                         MostrarArticulos();
+                        break;
+                    case 5:
+                        Console.Clear();
+                        MostrarPublicaciones();
                         break;
                     case 0:
                         exit = true;
@@ -41,6 +48,13 @@ namespace App
             foreach (Articulo art in _sistema.Articulos)
             {
                 Console.WriteLine(art);
+            }
+        }
+        public static void MostrarPublicaciones()
+        {
+            foreach (Publicacion publi in _sistema.Publicaciones)
+            {
+                Console.WriteLine(publi);
             }
         }
 
@@ -108,7 +122,19 @@ namespace App
         }
         public static void CargarPublicaciones()
         {
-            _sistema.AgregarPublicacion()
+            _sistema.AgregarPublicacion("Combo Oficina Moderna", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)], true);
+            _sistema.AgregarPublicacion("Hogar Inteligente", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(2), _sistema.ObtenerArticulo(3)], false);
+            _sistema.AgregarPublicacion("Cocina Funcional", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(6), _sistema.ObtenerArticulo(7), _sistema.ObtenerArticulo(5)], true);
+            _sistema.AgregarPublicacion("Gimnasio en Casa", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(42), _sistema.ObtenerArticulo(43), _sistema.ObtenerArticulo(41)], true);
+            _sistema.AgregarPublicacion("Rincón Acogedor", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(24), _sistema.ObtenerArticulo(26), _sistema.ObtenerArticulo(29)], false);
+            _sistema.AgregarPublicacion("Moda Deportiva", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(14), _sistema.ObtenerArticulo(15), _sistema.ObtenerArticulo(16)], true);
+            _sistema.AgregarPublicacion("Accesorios para Viaje", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(20), _sistema.ObtenerArticulo(19), _sistema.ObtenerArticulo(18)], false);
+            _sistema.AgregarPublicacion("Entretenimiento en el Hogar", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(3), _sistema.ObtenerArticulo(38), _sistema.ObtenerArticulo(36)], true);
+            _sistema.AgregarPublicacion("Música en Movimiento", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(47), _sistema.ObtenerArticulo(48), _sistema.ObtenerArticulo(50)], true);
+            _sistema.AgregarPublicacion("Estudio Creativo", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(33), _sistema.ObtenerArticulo(34), _sistema.ObtenerArticulo(35)], false);
+
+
+
         }
 
         public static void CargaArticulos()
