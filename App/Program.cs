@@ -12,17 +12,21 @@ namespace App
             bool exit = false;
             CargaArticulos();
             CargarPublicaciones();
+            AgregarCliente();
             do
             {
                 Console.WriteLine("" +
                     "1) Lista de cliente.\n" +
                     "2) Buscar articulo por categoria.\n" +
                     "3) Alta de articulo.\n" +
-                    "4) Listar articulos - Prueba\n" +
-                    "5) Test listado de publicacion\n" +
-                    "6) Test listado de publicacion");
-                switch (InputNumber("Seleccione una opcion ó 0 para salir", 6))
+                    "4) Listar publicaciones por fecha\n" +
+                    "5) Test listado de publicacion\n");
+                switch (InputNumber("Seleccione una opcion ó 0 para salir", 5))
                 {
+                    case 1:
+                        Console.Clear();
+                        MostrarClientes();
+                        break;
                     case 2:
                         ListarArticulosXCat();
                         break;
@@ -30,7 +34,7 @@ namespace App
                         AgregarArticulo();
                         break;
                     case 4:
-                        MostrarArticulos();
+                        ListarPublicacionesXFecha();
                         break;
                     case 5:
                         Console.Clear();
@@ -57,6 +61,77 @@ namespace App
                 Console.WriteLine(publi);
             }
         }
+        public static void MostrarClientes()
+        {
+            foreach (Usuario usuario in _sistema.Usuarios)
+            {
+                Console.WriteLine(usuario);
+            }
+        }
+
+        public static void ListarPublicacionesXFecha()
+        {
+            string option;
+            List<Publicacion> publicaciones;
+            DateTime fechaDesde, fechaHasta;
+            bool aux = false;
+            Console.Clear();
+            fechaDesde = InputDate("Ingrese la fecha 'desde', en formato dd/mm/yyyy");
+            fechaHasta = InputDate("Ingrese la fecha 'hasta', en formato dd/mm/yyyy");
+            option = "";
+            do
+            {
+                try
+                {
+                    switch (option)
+                    {
+                        case "E-FechaDesdeInvalida":
+                            fechaDesde = InputDate("Reingrese la fecha 'desde', en formato dd/mm/yyyy");
+                            break;
+                        case "E-FechaHastaInvalida":
+                            fechaHasta = InputDate("Reingrese la fecha 'Hasta', en formato dd/mm/yyyy");
+                            break;
+                        case "E-RangoIncompatible":
+                            Mensaje("La fecha 'desde' tiene que ser menor a la fecha 'hasta'", "WARNING");
+                            fechaDesde = InputDate("Reingrese la fecha 'desde', en formato dd/mm/yyyy");
+                            fechaHasta = InputDate("Reingrese la fecha 'hasta', en formato dd/mm/yyyy");
+                            break;
+                    }
+
+                    if (fechaDesde == DateTime.MinValue)
+                    {
+                        throw new Exception("E-FechaDesdeInvalida:La Fecha 'desde' no es correcta, vuelva a ingresar una fecha correcta.");
+                    }
+                    if (fechaHasta == DateTime.MinValue)
+                    {
+                        throw new Exception("E-FechaHastaInvalida:La Fecha 'hasta' no es correcta, vuelva a ingresar una fecha correcta.");
+                    }
+                    if (fechaDesde > fechaHasta)
+                    {
+                        throw new Exception("E-RangoIncompatible:La fecha 'desde' no puede ser mayor a la fecha 'hasta'");
+                    }
+
+                    publicaciones = _sistema.ObtenerPublicacionesXFecha(fechaDesde, fechaHasta);
+                    if (publicaciones.Count == 0)
+                    {
+                        Mensaje($"No se encontraron publicaciones en el rango {fechaDesde.Date} - {fechaHasta.Date}", "WARNING");
+                        aux = true;
+                    }
+                    foreach (Publicacion publicacion in publicaciones)
+                    {
+                        Console.WriteLine(publicacion);
+                    }
+                    aux = true;
+                }
+                catch (Exception error)
+                {
+                    option = error.Message.Split(":")[0];
+                    Mensaje(error.Message.Split(":")[0], "ERROR");
+                }
+
+            }
+            while (!aux);
+        }
 
         public static void ListarArticulosXCat()
         {
@@ -72,7 +147,22 @@ namespace App
             }
 
         }
+        public static void AgregarCliente()
+        {
+            _sistema.AgregarUsuario("Juan", "Pérez", "juan.perez@example.com", "Contraseña123");
+            _sistema.AgregarUsuario("Ana", "García", "ana.garcia@example.com", "Contraseña456");
+            _sistema.AgregarUsuario("Carlos", "Martínez", "carlos.martinez@example.com", "Contraseña789");
+            _sistema.AgregarUsuario("María", "López", "maria.lopez@example.com", "Contraseña321");
+            _sistema.AgregarUsuario("Luis", "Gómez", "luis.gomez@example.com", "Contraseña654");
+            _sistema.AgregarUsuario("Sofía", "Fernández", "sofia.fernandez@example.com", "Contraseña987");
+            _sistema.AgregarUsuario("Miguel", "Sánchez", "miguel.sanchez@example.com", "Contraseña741");
+            _sistema.AgregarUsuario("Laura", "Ramírez", "laura.ramirez@example.com", "Contraseña852");
+            _sistema.AgregarUsuario("Diego", "Torres", "diego.torres@example.com", "Contraseña963");
+            _sistema.AgregarUsuario("Lucía", "Vega", "lucia.vega@example.com", "Contraseña159");
 
+            _sistema.ObtenerUsuario("juan.perez@example.com").Depositar(150);
+            _sistema.ObtenerUsuario("ana.garcia@example.com").Depositar(500);
+        }
         public static void AgregarArticulo()
         {
             string nombre, categoria, codeError;
@@ -122,18 +212,25 @@ namespace App
         }
         public static void CargarPublicaciones()
         {
-            _sistema.AgregarPublicacion("Combo Oficina Moderna", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)], true);
-            _sistema.AgregarPublicacion("Hogar Inteligente", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(2), _sistema.ObtenerArticulo(3)], false);
-            _sistema.AgregarPublicacion("Cocina Funcional", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(6), _sistema.ObtenerArticulo(7), _sistema.ObtenerArticulo(5)], true);
-            _sistema.AgregarPublicacion("Gimnasio en Casa", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(42), _sistema.ObtenerArticulo(43), _sistema.ObtenerArticulo(41)], true);
-            _sistema.AgregarPublicacion("Rincón Acogedor", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(24), _sistema.ObtenerArticulo(26), _sistema.ObtenerArticulo(29)], false);
-            _sistema.AgregarPublicacion("Moda Deportiva", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(14), _sistema.ObtenerArticulo(15), _sistema.ObtenerArticulo(16)], true);
-            _sistema.AgregarPublicacion("Accesorios para Viaje", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(20), _sistema.ObtenerArticulo(19), _sistema.ObtenerArticulo(18)], false);
-            _sistema.AgregarPublicacion("Entretenimiento en el Hogar", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(3), _sistema.ObtenerArticulo(38), _sistema.ObtenerArticulo(36)], true);
-            _sistema.AgregarPublicacion("Música en Movimiento", "ABIERTA", DateTime.Now, [_sistema.ObtenerArticulo(47), _sistema.ObtenerArticulo(48), _sistema.ObtenerArticulo(50)], true);
-            _sistema.AgregarPublicacion("Estudio Creativo", "CERRADA", DateTime.Now, [_sistema.ObtenerArticulo(33), _sistema.ObtenerArticulo(34), _sistema.ObtenerArticulo(35)], false);
+            _sistema.AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)], true);
+            _sistema.AgregarPublicacion("Hogar Inteligente", Publicacion.Estado.CERRADA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(2), _sistema.ObtenerArticulo(3)], false);
+            _sistema.AgregarPublicacion("Cocina Funcional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 6), [_sistema.ObtenerArticulo(6), _sistema.ObtenerArticulo(7), _sistema.ObtenerArticulo(5)], true);
+            _sistema.AgregarPublicacion("Gimnasio en Casa", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 7), [_sistema.ObtenerArticulo(42), _sistema.ObtenerArticulo(43), _sistema.ObtenerArticulo(41)], true);
+            _sistema.AgregarPublicacion("Rincón Acogedor", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 25), [_sistema.ObtenerArticulo(24), _sistema.ObtenerArticulo(26), _sistema.ObtenerArticulo(29)], false);
+            _sistema.AgregarPublicacion("Moda Deportiva", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 5), [_sistema.ObtenerArticulo(14), _sistema.ObtenerArticulo(15), _sistema.ObtenerArticulo(16)], true);
+            _sistema.AgregarPublicacion("Accesorios para Viaje", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 10), [_sistema.ObtenerArticulo(20), _sistema.ObtenerArticulo(19), _sistema.ObtenerArticulo(18)], false);
+            _sistema.AgregarPublicacion("Entretenimiento en el Hogar", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 8), [_sistema.ObtenerArticulo(3), _sistema.ObtenerArticulo(38), _sistema.ObtenerArticulo(36)], true);
+            _sistema.AgregarPublicacion("Música en Movimiento", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 12), [_sistema.ObtenerArticulo(47), _sistema.ObtenerArticulo(48), _sistema.ObtenerArticulo(50)], true);
+            _sistema.AgregarPublicacion("Estudio Creativo", Publicacion.Estado.CERRADA, new DateTime(2024, 10, 10), [_sistema.ObtenerArticulo(33), _sistema.ObtenerArticulo(34), _sistema.ObtenerArticulo(35)], false);
+
+            _sistema.AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)]);
 
 
+
+        }
+
+        public static void RealizarOferta()
+        {
 
         }
 
@@ -258,12 +355,52 @@ namespace App
             }
             while (true);
         }
+        public static DateTime InputDate(string msj)
+        {
+            string fechaInput, option;
+            DateTime fechaOut;
+            bool aux = false;
+            fechaInput = InputString(msj, 10);
+            option = "";
+            do
+            {
+                try
+                {
+                    switch (option)
+                    {
+                        case "E-Fecha":
+                            fechaInput = InputString("Ingrese la fecha 'desde', en formato dd/mm/yyyy", 10);
+                            break;
+                    }
+
+                    if (!DateTime.TryParse(fechaInput, out fechaOut))
+                    {
+                        throw new Exception("E-FechaFormato:El formato de la fecha esta incorrecto");
+                    }
+
+                    aux = true;
+                    return fechaOut;
+                }
+                catch (Exception error)
+                {
+                    option = error.Message.Split(":")[0];
+                    Mensaje(error.Message.Split(":")[1], "ERROR");
+                }
+            }
+            while (!aux);
+            return DateTime.MinValue;
+        }
         public static void Mensaje(string msj, string tipo)
         {
             switch (tipo)
             {
                 case "OK":
                     Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"--- {msj} ---");
+                    Console.ResetColor();
+                    break;
+                case "WARNING":
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"--- {msj} ---");
                     Console.ResetColor();
                     break;
@@ -278,5 +415,6 @@ namespace App
                     break;
             }
         }
+
     }
 }

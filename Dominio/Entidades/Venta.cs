@@ -4,7 +4,7 @@
     {
         public bool EnOfertaRelampago { get; set; }
 
-        public Venta(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
+        public Venta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
         {
             EnOfertaRelampago = enOferta;
         }
@@ -30,5 +30,9 @@
                 $"En oferta: {(EnOfertaRelampago ? "Si" : "No")}\n";
         }
 
+        public override Oferta UltimaOferta()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

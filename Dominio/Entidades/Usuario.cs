@@ -1,6 +1,6 @@
 ﻿namespace Dominio.Entidades
 {
-    public class Usuario
+    public abstract class Usuario
     {
         private static int IdCount { get; set; }
         public int Id { get; set; }
@@ -17,8 +17,7 @@
             Email = email;
             Contrasenia = contrasenia;
         }
-
-        
+        public abstract void Depositar(decimal monto);
         public override string ToString()
         {
             return $"Usuario: {Nombre} {Apellido}\nEmail: {Email}";

@@ -15,13 +15,15 @@ namespace Dominio
         public List<string> Categorias { get { return _categorias; } }
 
         // Metodo de agregacion
-        public void AgregarUsuario(Usuario usuario)
+        public void AgregarUsuario(string nombre, string apellido, string email, string contrasenia)
         {
-            _usuarios.Add(usuario);
+
+            _usuarios.Add(new Cliente(nombre, apellido, email, contrasenia));
+
         }
-        public void AgregarPublicacion(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta)
+        public void AgregarPublicacion(string nombre, Publicacion.Estado estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta)
         {
-            if(articulos.Count == 0)
+            if (articulos.Count == 0)
             {
                 throw new Exception("E-PubliArticuloVacio:Ingrese articulos para crear la publicacion.");
             }
@@ -33,7 +35,7 @@ namespace Dominio
             publicacion.Validar();
             _publicaciones.Add(publicacion);
         }
-        public void AgregarPublicacion(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos)
+        public void AgregarPublicacion(string nombre, Publicacion.Estado estado, DateTime fechaPublicacion, List<Articulo> articulos)
         {
             if (articulos.Count == 0)
             {
@@ -50,7 +52,7 @@ namespace Dominio
         public void AgregarArticulo(string nombre, string categoria, decimal precio)
         {
             Articulo articulo = new Articulo(nombre, categoria, precio);
-            if(articulo == null)
+            if (articulo == null)
             {
                 throw new Exception("E-ArticuloInvalido:Articulo ingresado invalido. Intente de nuevo.");
             }
@@ -70,6 +72,17 @@ namespace Dominio
         }
 
         // Metodos de busquedas
+        public Usuario ObtenerUsuario(string email)
+        {
+            foreach (Usuario usuario in _usuarios)
+            {
+                if (usuario.Email == email)
+                {
+                    return usuario;
+                }
+            }
+            return null;
+        }
         public List<Articulo> ObtenerArticulosXCat(string categoria)
         {
             List<Articulo> articulos = new List<Articulo>();
@@ -84,7 +97,7 @@ namespace Dominio
         }
         public Articulo ObtenerArticulo(string nombre)
         {
-            foreach(Articulo articulo in _articulos)
+            foreach (Articulo articulo in _articulos)
             {
                 if (articulo.Nombre == nombre)
                 {
@@ -103,6 +116,34 @@ namespace Dominio
                 }
             }
             return null;
+        }
+        public List<Publicacion> ObtenerPublicacionesXFecha(DateTime fechaDesde, DateTime fechaHasta)
+        {
+            List<Publicacion> aux = new List<Publicacion>();
+            foreach(Publicacion publicacion in _publicaciones)
+            {
+                if(publicacion.FechaPublicacion.Date > fechaDesde.Date && publicacion.FechaPublicacion.Date < fechaHasta.Date)
+                {
+                    aux.Add(publicacion);
+                }
+            }
+            return aux;
+        }
+        public Publicacion ObtenerPublicacion(int id)
+        {
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion.Id == id)
+                {
+                    return publicacion;
+                }
+            }
+            return null;
+        }
+
+        public void Ofertar()
+        {
+
         }
     }
 }

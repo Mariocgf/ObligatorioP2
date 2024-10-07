@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dominio.Entidades
+﻿namespace Dominio.Entidades
 {
     public class Subasta : Publicacion
     {
@@ -14,8 +8,31 @@ namespace Dominio.Entidades
         {
             throw new NotImplementedException();
         }
-        public Subasta(string nombre, string estado, DateTime fechaPublicacion, List<Articulo> articulos) : base(nombre, estado, fechaPublicacion, articulos)
+        public Subasta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos) : base(nombre, estado, fechaPublicacion, articulos)
         {
+        }
+
+        public override Oferta UltimaOferta()
+        {
+            decimal max = 0;
+            Oferta aux = null;
+            foreach (Oferta oferta in _ofertas)
+            {
+                if (oferta.Monto > max)
+                {
+                    max = oferta.Monto;
+                    aux = oferta;
+                }
+            }
+            if (max != 0)
+            {
+                return aux;
+            }
+            else
+            {
+                return null;
+            }
+            
         }
     }
 }
