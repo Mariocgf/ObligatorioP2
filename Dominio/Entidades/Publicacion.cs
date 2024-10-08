@@ -13,6 +13,9 @@
         public string Nombre { get; set; }
         public Estado EstadoPublicacion { get; set; }
         public DateTime FechaPublicacion { get; set; }
+        public Cliente Cliente { get; set; }
+        public Usuario Usuario { get; set; } 
+        public DateTime FechaTerminacionPublicacion { get; set; }
         private List<Articulo> _articulos;
 
         public List<Articulo> Articulos { get { return _articulos; } }
@@ -27,21 +30,12 @@
             _articulos = articulos;
         }
 
-
-        private void ValidarEstado(string estado)
-        {
-            string[] estados = ["ABIERTA", "CERRADA", "CANCELADA"];
-            if (!estados.Contains(estado.ToUpper()))
-            {
-                throw new Exception("E-EstadoInvalido:El estado ingresado es invalido.");
-            }
-        }
         public virtual void Validar()
         {
-            //ValidarEstado(Estado);
+            
         }
         public abstract decimal Monto();
-        public abstract Oferta UltimaOferta();
+
 
         public override string ToString()
         {

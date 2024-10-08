@@ -1,6 +1,5 @@
 ﻿using Dominio;
 using Dominio.Entidades;
-using System.Linq;
 
 namespace App
 {
@@ -10,9 +9,7 @@ namespace App
         static void Main(string[] args)
         {
             bool exit = false;
-            CargaArticulos();
-            CargarPublicaciones();
-            AgregarCliente();
+            _sistema.Precarga();
             do
             {
                 Console.WriteLine("" +
@@ -25,7 +22,7 @@ namespace App
                 {
                     case 1:
                         Console.Clear();
-                        MostrarClientes();
+                        ListarClientes();
                         break;
                     case 2:
                         ListarArticulosXCat();
@@ -47,6 +44,7 @@ namespace App
             }
             while (!exit);
         }
+        // Metodos de Listar
         public static void MostrarArticulos()
         {
             foreach (Articulo art in _sistema.Articulos)
@@ -61,14 +59,13 @@ namespace App
                 Console.WriteLine(publi);
             }
         }
-        public static void MostrarClientes()
+        public static void ListarClientes()
         {
-            foreach (Usuario usuario in _sistema.Usuarios)
+            foreach (Cliente cliente in _sistema.Usuarios)
             {
-                Console.WriteLine(usuario);
+                Console.WriteLine(cliente);
             }
         }
-
         public static void ListarPublicacionesXFecha()
         {
             string option;
@@ -126,13 +123,12 @@ namespace App
                 catch (Exception error)
                 {
                     option = error.Message.Split(":")[0];
-                    Mensaje(error.Message.Split(":")[0], "ERROR");
+                    Mensaje(error.Message.Split(":")[1], "ERROR");
                 }
 
             }
             while (!aux);
         }
-
         public static void ListarArticulosXCat()
         {
             Mensaje("BUSQUEDA DE ARTICULOS POR CATEGORIA", "INICIO");
@@ -147,22 +143,8 @@ namespace App
             }
 
         }
-        public static void AgregarCliente()
-        {
-            _sistema.AgregarUsuario("Juan", "Pérez", "juan.perez@example.com", "Contraseña123");
-            _sistema.AgregarUsuario("Ana", "García", "ana.garcia@example.com", "Contraseña456");
-            _sistema.AgregarUsuario("Carlos", "Martínez", "carlos.martinez@example.com", "Contraseña789");
-            _sistema.AgregarUsuario("María", "López", "maria.lopez@example.com", "Contraseña321");
-            _sistema.AgregarUsuario("Luis", "Gómez", "luis.gomez@example.com", "Contraseña654");
-            _sistema.AgregarUsuario("Sofía", "Fernández", "sofia.fernandez@example.com", "Contraseña987");
-            _sistema.AgregarUsuario("Miguel", "Sánchez", "miguel.sanchez@example.com", "Contraseña741");
-            _sistema.AgregarUsuario("Laura", "Ramírez", "laura.ramirez@example.com", "Contraseña852");
-            _sistema.AgregarUsuario("Diego", "Torres", "diego.torres@example.com", "Contraseña963");
-            _sistema.AgregarUsuario("Lucía", "Vega", "lucia.vega@example.com", "Contraseña159");
 
-            _sistema.ObtenerUsuario("juan.perez@example.com").Depositar(150);
-            _sistema.ObtenerUsuario("ana.garcia@example.com").Depositar(500);
-        }
+        // Metodo de alta
         public static void AgregarArticulo()
         {
             string nombre, categoria, codeError;
@@ -210,84 +192,10 @@ namespace App
             }
             while (!ok);
         }
-        public static void CargarPublicaciones()
-        {
-            _sistema.AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)], true);
-            _sistema.AgregarPublicacion("Hogar Inteligente", Publicacion.Estado.CERRADA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(2), _sistema.ObtenerArticulo(3)], false);
-            _sistema.AgregarPublicacion("Cocina Funcional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 6), [_sistema.ObtenerArticulo(6), _sistema.ObtenerArticulo(7), _sistema.ObtenerArticulo(5)], true);
-            _sistema.AgregarPublicacion("Gimnasio en Casa", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 7), [_sistema.ObtenerArticulo(42), _sistema.ObtenerArticulo(43), _sistema.ObtenerArticulo(41)], true);
-            _sistema.AgregarPublicacion("Rincón Acogedor", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 25), [_sistema.ObtenerArticulo(24), _sistema.ObtenerArticulo(26), _sistema.ObtenerArticulo(29)], false);
-            _sistema.AgregarPublicacion("Moda Deportiva", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 5), [_sistema.ObtenerArticulo(14), _sistema.ObtenerArticulo(15), _sistema.ObtenerArticulo(16)], true);
-            _sistema.AgregarPublicacion("Accesorios para Viaje", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 10), [_sistema.ObtenerArticulo(20), _sistema.ObtenerArticulo(19), _sistema.ObtenerArticulo(18)], false);
-            _sistema.AgregarPublicacion("Entretenimiento en el Hogar", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 8), [_sistema.ObtenerArticulo(3), _sistema.ObtenerArticulo(38), _sistema.ObtenerArticulo(36)], true);
-            _sistema.AgregarPublicacion("Música en Movimiento", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 12), [_sistema.ObtenerArticulo(47), _sistema.ObtenerArticulo(48), _sistema.ObtenerArticulo(50)], true);
-            _sistema.AgregarPublicacion("Estudio Creativo", Publicacion.Estado.CERRADA, new DateTime(2024, 10, 10), [_sistema.ObtenerArticulo(33), _sistema.ObtenerArticulo(34), _sistema.ObtenerArticulo(35)], false);
-
-            _sistema.AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [_sistema.ObtenerArticulo(1), _sistema.ObtenerArticulo(22), _sistema.ObtenerArticulo(32)]);
-
-
-
-        }
 
         public static void RealizarOferta()
         {
 
-        }
-
-        public static void CargaArticulos()
-        {
-            string[] nombre = [
-            "Laptop", "Smartphone", "Televisor", "Lavadora", "Refrigerador",
-            "Microondas", "Tostadora", "Aspiradora", "Plancha", "Cafetera",
-            "Reloj", "Anillo", "Collar", "Zapatos Deportivos", "Camiseta",
-            "Chaqueta", "Pantalones", "Sombrero", "Gafas de sol", "Mochila",
-            "Escritorio", "Silla", "Sofá", "Mesa de comedor", "Lámpara de pie",
-            "Lámpara de mesa", "Alfombra", "Cuadro", "Espejo", "Vela Aromática",
-            "Monitor", "Teclado", "Mouse", "Auriculares", "Altavoz Bluetooth",
-            "Impresora", "Tablet", "Cámara", "Consola de videojuegos", "Bicicleta",
-            "Patines", "Balón de fútbol", "Cinta para correr", "Pesas",
-            "Batería Electrónica", "Guitarra", "Teclado Musical", "Bajo",
-            "Batería Acústica", "Micrófono"
-        ];
-
-            string[] categoria = [
-            "Electrónica", "Electrónica", "Electrónica", "Electrodoméstico", "Electrodoméstico",
-            "Electrodoméstico", "Electrodoméstico", "Electrodoméstico", "Electrodoméstico", "Electrodoméstico",
-            "Accesorios", "Joyería", "Joyería", "Ropa", "Ropa",
-            "Ropa", "Ropa", "Accesorios", "Accesorios", "Accesorios",
-            "Muebles", "Muebles", "Muebles", "Muebles", "Iluminación",
-            "Iluminación", "Decoración", "Decoración", "Decoración", "Decoración",
-            "Electrónica", "Electrónica", "Electrónica", "Electrónica", "Electrónica",
-            "Electrónica", "Electrónica", "Electrónica", "Entretenimiento", "Deportes",
-            "Deportes", "Deportes", "Deportes", "Deportes",
-            "Música", "Música", "Música", "Música",
-            "Música", "Música"
-        ];
-
-            decimal[] precio = [
-            999.99m, 799.99m, 499.99m, 299.99m, 699.99m,
-            89.99m, 29.99m, 159.99m, 39.99m, 79.99m,
-            199.99m, 499.99m, 299.99m, 79.99m, 19.99m,
-            49.99m, 39.99m, 24.99m, 99.99m, 59.99m,
-            249.99m, 89.99m, 499.99m, 299.99m, 59.99m,
-            39.99m, 99.99m, 149.99m, 79.99m, 19.99m,
-            199.99m, 49.99m, 29.99m, 79.99m, 99.99m,
-            149.99m, 299.99m, 599.99m, 399.99m, 249.99m,
-            99.99m, 29.99m, 899.99m, 59.99m,
-            799.99m, 299.99m, 499.99m, 399.99m,
-            999.99m, 149.99m
-        ];
-
-
-            for (int i = 0; i < nombre.Length; i++)
-            {
-                _sistema.AgregarArticulo(nombre[i], categoria[i], precio[i]);
-                if (!_sistema.Categorias.Contains(categoria[i]))
-                {
-                    _sistema.AgregarCategoria(categoria[i]);
-                }
-
-            }
         }
 
         // Metodos de entrada

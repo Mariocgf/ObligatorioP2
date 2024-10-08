@@ -4,8 +4,8 @@
     {
         public decimal Billetera { get; set; }
 
-        public Cliente(string nombre, string apellido, string email, string contrasenia) : base (nombre, apellido, email, contrasenia)
-    {
+        public Cliente(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia)
+        {
             Billetera = 0;
         }
         public override void Depositar(decimal monto)

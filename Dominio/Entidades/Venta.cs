@@ -30,9 +30,5 @@
                 $"En oferta: {(EnOfertaRelampago ? "Si" : "No")}\n";
         }
 
-        public override Oferta UltimaOferta()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

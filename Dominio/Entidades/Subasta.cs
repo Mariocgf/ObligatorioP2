@@ -2,7 +2,7 @@
 {
     public class Subasta : Publicacion
     {
-        private List<Oferta> _ofertas = new List<Oferta>();
+        public Oferta Oferta { get; set; }
 
         public override decimal Monto()
         {
@@ -12,27 +12,6 @@
         {
         }
 
-        public override Oferta UltimaOferta()
-        {
-            decimal max = 0;
-            Oferta aux = null;
-            foreach (Oferta oferta in _ofertas)
-            {
-                if (oferta.Monto > max)
-                {
-                    max = oferta.Monto;
-                    aux = oferta;
-                }
-            }
-            if (max != 0)
-            {
-                return aux;
-            }
-            else
-            {
-                return null;
-            }
-            
-        }
+        
     }
 }
