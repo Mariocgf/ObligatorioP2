@@ -1,4 +1,8 @@
-﻿using Dominio.Entidades;
+﻿***********************************
+Archivo: Sistema.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Sistema.cs
+***********************************
+using Dominio.Entidades;
 
 namespace Dominio
 {
@@ -321,5 +325,371 @@ namespace Dominio
             //AgregarUsuario("Luis", "", "luis.fernandez@hotmail.com", "ClaveSegura#1"); El Apellido esta vacio
 
         }
+    }
+}
+
+***********************************
+Archivo: Administrador.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Administrador.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Administrador : Usuario
+    {
+        public Administrador(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia) 
+        { 
+        }
+
+        public override void Depositar(decimal monto) {}
+    }
+}
+
+***********************************
+Archivo: Articulo.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Articulo.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Articulo
+    {
+        private static int IdCount { get; set; }
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Categoria { get; set; }
+        public decimal Precio { get; set; }
+
+        public Articulo(string nombre, string categoria, decimal precio)
+        {
+            Id = ++IdCount;
+            Nombre = nombre;
+            Categoria = categoria;
+            Precio = precio;
+        }
+
+        public void ValidarCaracteres(string letra, string tipo)
+        {
+            // 32 38-46 65-90 97-122 espacio y caracteres (mayusculas y minusculas)
+            // (225-233-237-243-250) = á, é, í, ó, ú
+            // (193-201-205-211-218) =  Á, É, Í, Ó, Ú
+            // (209-241) = ñ, Ñ
+
+            int[] caracteresEspeciales = [32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250];
+            int cont = 0;
+            foreach (char c in letra)
+            {
+                if (caracteresEspeciales.Contains((int)c) || ((int)c >= 38 && (int)c <= 46) || ((int)c >= 65 && (int)c <= 90) || ((int)c >= 97 && (int)c <= 122) )
+                {
+                    cont++;
+                }
+            }
+            if (cont != letra.Length)
+            {
+                throw new Exception($"E-Caracter{tipo}:{tipo} cuenta con caracter/es invalido/s");
+            }
+        }
+
+        public void ValidarNombreYCategoria(string nombre, string categoria)
+        {
+            if (string.IsNullOrEmpty(nombre))
+            {
+                throw new Exception("E-NombreNulloEmpty:El nombre es null o esta vacio");
+            }
+            if (string.IsNullOrEmpty(categoria))
+            {
+                throw new Exception("E-CategoriaNullOEmpty:La categoria es null o esta vacia");
+            }
+            if (nombre.Length < 2)
+            {
+                throw new Exception("E-TamanioNombre:El tamaño del nombre debe ser mayor o igual a 2, Ej. Té.");
+            }
+            if (categoria.Length < 4)
+            {
+                Console.WriteLine(categoria.Length);
+                throw new Exception("E-TamanioCategoria:El tamaño de la categoria debe ser mayor o igual a 4, Ej. Ropa.");
+            }
+        }
+        private void ValidarPrecio(decimal precio)
+        {
+            if (precio < 0)
+            {
+                throw new Exception("E-PrecioNeg:El monto del precio no puede ser negativo");
+            }
+        }
+
+        public void Validar()
+        {
+            ValidarNombreYCategoria(Nombre, Categoria);
+            ValidarCaracteres(Nombre, "Nombre");
+            ValidarCaracteres(Categoria, "Categoria");
+            ValidarPrecio(Precio);
+        }
+
+        public override string ToString()
+        {
+            return $"" +
+                $"ID: {Id}\n" +
+                $"Nombre: {Nombre}\n" +
+                $"Categoria: {Categoria}\n" +
+                $"Precio: {Precio}\n";
+        }
+
+        public override bool Equals(object? obj)
+        {
+            Articulo articulo = obj as Articulo;
+            return articulo != null && Nombre.ToUpper() == articulo.Nombre.ToUpper();
+        }
+    }
+}
+
+***********************************
+Archivo: Cliente.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Cliente.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Cliente : Usuario
+    {
+        public decimal Billetera { get; set; }
+
+        public Cliente(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia)
+        {
+            Billetera = 0;
+        }
+        public override void Depositar(decimal monto)
+        {
+            if (monto < 0)
+            {
+                throw new Exception("E-MontoNegativo:El monto a depositar no pude ser negativo");
+            }
+            Billetera += monto;
+        }
+        public override string ToString()
+        {
+            return $"" +
+                $"{base.ToString()}\n" +
+                $"Billetera: {Billetera}\n";
+        }
+    }
+}
+
+***********************************
+Archivo: Oferta.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Oferta.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Oferta
+    {
+        private static int s_idCont;
+        public int Id { get; set; }
+        public Cliente Cliente { get; set; }
+        public decimal Monto { get; set; }
+        public DateTime Fecha { get; set; }
+
+        public Oferta (Cliente cliente, decimal monto, DateTime fecha)
+        {
+            Id = ++ s_idCont;
+            Cliente = cliente;
+            Monto = monto;
+            Fecha = fecha;
+        }
+    }
+}
+
+***********************************
+Archivo: Publicacion.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Publicacion.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public abstract class Publicacion
+    {
+        public enum Estado
+        {
+            ABIERTA = 0,
+            CERRADA = 1,
+            CANCELADA = 2
+        }
+        private static int IdCount { get; set; }
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public Estado EstadoPublicacion { get; set; }
+        public DateTime FechaPublicacion { get; set; }
+        public Cliente Cliente { get; set; }
+        public Usuario Usuario { get; set; } 
+        public DateTime FechaTerminacionPublicacion { get; set; }
+        private List<Articulo> _articulos;
+
+        public List<Articulo> Articulos { get { return _articulos; } }
+
+
+        public Publicacion(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos)
+        {
+            Id = ++IdCount;
+            Nombre = nombre;
+            EstadoPublicacion = estado;
+            FechaPublicacion = fechaPublicacion;
+            _articulos = articulos;
+        }
+        public virtual void ValidarNombre()
+        {
+            if (string.IsNullOrEmpty(Nombre))
+            {
+                throw new Exception("E-NombreEmpty:El nombre ingresado esta vacio");
+            }
+        }
+        public virtual void Validar()
+        {
+            ValidarNombre();
+        }
+        public abstract decimal Monto();
+
+
+        public override string ToString()
+        {
+            return $"Publicacion {Id}\n" +
+                $"Nombre: {Nombre}\n" +
+                $"Estado: {EstadoPublicacion}\n" +
+                $"Fecha de publicacion: {FechaPublicacion.ToString("d")}";
+        }
+        public override bool Equals(object? obj)
+        {
+            Publicacion publicacion = obj as Publicacion;
+            return publicacion != null && Nombre.ToLower() == publicacion.Nombre.ToLower();
+        }
+    }
+}
+
+***********************************
+Archivo: Subasta.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Subasta.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Subasta : Publicacion
+    {
+        public Oferta Oferta { get; set; }
+
+        public override decimal Monto()
+        {
+            throw new NotImplementedException();
+        }
+        public Subasta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos) : base(nombre, estado, fechaPublicacion, articulos)
+        {
+        }
+
+        
+    }
+}
+
+***********************************
+Archivo: Usuario.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Usuario.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public abstract class Usuario
+    {
+        private static int IdCount { get; set; }
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Email { get; set; }
+        public string Contrasenia { get; set; }
+
+        public Usuario(string nombre, string apellido, string email, string contrasenia)
+        {
+            Id = ++IdCount;
+            Nombre = nombre;
+            Apellido = apellido;
+            Email = email;
+            Contrasenia = contrasenia;
+        }
+
+        public virtual void ValidarEmailFormato()
+        {
+            bool arroba = false;
+            foreach (char elem in Email)
+            {
+                if (elem.Equals('@'))
+                {
+                    arroba = true;
+                }
+            }
+            if (!arroba)
+            {
+                throw new Exception("E-EmailFormato:El formato del email debe ser email@example");
+            }
+        }
+        public virtual void ValidarContrasenia()
+        {
+            if (string.IsNullOrEmpty(Contrasenia))
+            {
+                throw new Exception("E-ContraseniaEmpty:La contraseña no puede estar vacia");
+            }
+        }
+        public virtual void ValidarCampo(string data, string tipo)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                throw new Exception($"E-{tipo}Empty:El {tipo} esta vacio.");
+            }
+        }
+        public virtual void Validar()
+        {
+            ValidarEmailFormato();
+            ValidarContrasenia();
+            ValidarCampo(Nombre, "Nombre");
+            ValidarCampo(Apellido, "Apellido");
+        }
+        public abstract void Depositar(decimal monto);
+        public override string ToString()
+        {
+            return $"Usuario: {Nombre} {Apellido}\nEmail: {Email}";
+        }
+        public override bool Equals(object? obj)
+        {
+            Usuario usuario = obj as Usuario;
+            return usuario != null && Email.ToLower() == usuario.Email.ToLower();
+        }
+    }
+}
+
+***********************************
+Archivo: Venta.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Venta.cs
+***********************************
+namespace Dominio.Entidades
+{
+    public class Venta : Publicacion
+    {
+        public bool EnOfertaRelampago { get; set; }
+
+        public Venta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
+        {
+            EnOfertaRelampago = enOferta;
+        }
+        public override decimal Monto()
+        {
+            decimal total = 0;
+            foreach (Articulo articulo in base.Articulos)
+            {
+                total += articulo.Precio;
+            }
+            if (EnOfertaRelampago)
+            {
+                return total - total * 0.20m;
+            }
+            return total;
+        }
+
+        public override string ToString()
+        {
+            return $"" +
+                $"{base.ToString()}\n" +
+                $"Monto: {Monto()}\n" +
+                $"En oferta: {(EnOfertaRelampago ? "Si" : "No")}\n";
+        }
+
     }
 }

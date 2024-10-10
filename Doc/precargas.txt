@@ -1,0 +1,142 @@
+﻿***********************************
+
+private void PrecargarPublicaciones()
+***********************************
+
+{
+//  Casos de exito
+AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
+AgregarPublicacion("Kit de Entretenimiento Electrónico", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [ObtenerArticulo(6), ObtenerArticulo(24), ObtenerArticulo(35)], false);
+AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(51), ObtenerArticulo(54), ObtenerArticulo(53)], true);
+AgregarPublicacion("Set Fotografía Profesional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(3), ObtenerArticulo(8), ObtenerArticulo(28)], false);
+AgregarPublicacion("Kit de Cocina Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 22), [ObtenerArticulo(26), ObtenerArticulo(30), ObtenerArticulo(27)], true);
+AgregarPublicacion("Combo Tecnología para Oficina", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 18), [ObtenerArticulo(7), ObtenerArticulo(21), ObtenerArticulo(2)], false);
+AgregarPublicacion("Accesorios para Viaje", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 3), [ObtenerArticulo(49), ObtenerArticulo(43), ObtenerArticulo(46)], true);
+AgregarPublicacion("Sala Moderna y Minimalista", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 30), [ObtenerArticulo(14), ObtenerArticulo(15), ObtenerArticulo(13)], false);
+AgregarPublicacion("Electrodomésticos de Cocina", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 1), [ObtenerArticulo(26), ObtenerArticulo(23), ObtenerArticulo(28)], true);
+AgregarPublicacion("Paquete de Audio y Entretenimiento", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 25), [ObtenerArticulo(9), ObtenerArticulo(19), ObtenerArticulo(6)], false);
+
+AgregarPublicacion("Pack de Trabajo en Casa", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 12), [ObtenerArticulo(5), ObtenerArticulo(1), ObtenerArticulo(18)]);
+AgregarPublicacion("Conjunto de Muebles para Sala", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 4), [ObtenerArticulo(15), ObtenerArticulo(13), ObtenerArticulo(17)]);
+AgregarPublicacion("Kit de Viaje y Aventura", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 28), [ObtenerArticulo(46), ObtenerArticulo(49), ObtenerArticulo(44)]);
+AgregarPublicacion("Paquete Básico de Electrónica", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 6), [ObtenerArticulo(1), ObtenerArticulo(2), ObtenerArticulo(5)]);
+AgregarPublicacion("Set de Decoración Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 20), [ObtenerArticulo(19), ObtenerArticulo(16), ObtenerArticulo(18)]);
+AgregarPublicacion("Paquete Oficina y Tecnología", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 24), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(6)]);
+AgregarPublicacion("Electrodomésticos para el Hogar", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 26), [ObtenerArticulo(25), ObtenerArticulo(24), ObtenerArticulo(27)]);
+AgregarPublicacion("Tecnología y Entretenimiento Familiar", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(35), ObtenerArticulo(39), ObtenerArticulo(40)]);
+AgregarPublicacion("Set Completo de Cocina", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 29), [ObtenerArticulo(28), ObtenerArticulo(29), ObtenerArticulo(30)]);
+AgregarPublicacion("Paquete de Iluminación y Decoración", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 7), [ObtenerArticulo(14), ObtenerArticulo(16), ObtenerArticulo(20)]);
+
+// Casos de error
+//AgregarPublicacion("Sala Moderna y Minimalista", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 30), [ObtenerArticulo(14), ObtenerArticulo(15), ObtenerArticulo(13)], false); La publicacion ingresada ya esta registrada -> venta
+//AgregarPublicacion("Paquete de Iluminación y Decoración", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 7), [ObtenerArticulo(14), ObtenerArticulo(16), ObtenerArticulo(20)]); La publicacion ingresada ya esta registrada -> subasta
+//AgregarPublicacion("", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 29), [ObtenerArticulo(28), ObtenerArticulo(29), ObtenerArticulo(30)]); El nombre ingresado esta vacio -> subasta
+//AgregarPublicacion("Kit de Cocina Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 22), [ObtenerArticulo(26), ObtenerArticulo(30), ObtenerArticulo(27)], true); La publicacion ingresada ya esta registrada -> venta
+//AgregarPublicacion("Electrodomésticos de Cocina", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 1), [], true); Ingrese articulos para crear la publicacion -> venta
+//AgregarPublicacion("Paquete Oficina y Tecnología", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 24), []); Ingrese articulos para crear la publicacion -> subasta
+
+
+}
+
+***********************************
+
+private void PrecargarArticulos()
+***********************************
+
+{
+// Casos de exitos
+AgregarArticulo("Laptop", "Electrónica", 799.99m);
+AgregarArticulo("Smartphone", "Electrónica", 599.49m);
+AgregarArticulo("Cámara", "Fotografía", 450.75m);
+AgregarArticulo("Teclado", "Accesorios", 45.99m);
+AgregarArticulo("Mouse", "Accesorios", 29.99m);
+AgregarArticulo("Monitor", "Electrónica", 199.99m);
+AgregarArticulo("Impresora", "Oficina", 125.89m);
+AgregarArticulo("Audífonos", "Electrónica", 89.99m);
+AgregarArticulo("Tablet", "Electrónica", 349.99m);
+AgregarArticulo("Bocinas", "Audio", 119.99m);
+AgregarArticulo("Silla", "Muebles", 159.99m);
+AgregarArticulo("Escritorio", "Muebles", 249.99m);
+AgregarArticulo("Lámpara", "Iluminación", 39.99m);
+AgregarArticulo("Sofá", "Muebles", 899.99m);
+AgregarArticulo("Mesa", "Muebles", 199.99m);
+AgregarArticulo("Estante", "Muebles", 79.99m);
+AgregarArticulo("Reloj", "Decoración", 29.99m);
+AgregarArticulo("Cuadro", "Decoración", 49.99m);
+AgregarArticulo("Cortinas", "Decoración", 25.99m);
+AgregarArticulo("Alfombra", "Decoración", 99.99m);
+AgregarArticulo("Refri", "Electrodomésticos", 999.99m);
+AgregarArticulo("Estufa", "Electrodomésticos", 549.99m);
+AgregarArticulo("Lavadora", "Electrodomésticos", 749.99m);
+AgregarArticulo("Microondas", "Electrodomésticos", 119.99m);
+AgregarArticulo("Aspiradora", "Electrodomésticos", 199.99m);
+AgregarArticulo("Licuadora", "Cocina", 49.99m);
+AgregarArticulo("Cafetera", "Cocina", 79.99m);
+AgregarArticulo("Tostadora", "Cocina", 29.99m);
+AgregarArticulo("Olla", "Cocina", 59.99m);
+AgregarArticulo("Sarten", "Cocina", 39.99m);
+AgregarArticulo("Camisa", "Ropa", 24.99m);
+AgregarArticulo("Pantalones", "Ropa", 39.99m);
+AgregarArticulo("Zapatos", "Calzado", 79.99m);
+AgregarArticulo("Chaqueta", "Ropa", 99.99m);
+AgregarArticulo("Bufanda", "Accesorios", 14.99m);
+AgregarArticulo("Sombrero", "Accesorios", 19.99m);
+AgregarArticulo("Bolsa", "Accesorios", 49.99m);
+AgregarArticulo("Reloj de pulsera", "Accesorios", 129.99m);
+AgregarArticulo("Lentes de sol", "Accesorios", 59.99m);
+AgregarArticulo("Mochila", "Accesorios", 39.99m);
+AgregarArticulo("Colchón", "Dormitorio", 499.99m);
+AgregarArticulo("Sábanas", "Dormitorio", 59.99m);
+AgregarArticulo("Almohada", "Dormitorio", 29.99m);
+AgregarArticulo("Cobertor", "Dormitorio", 79.99m);
+AgregarArticulo("Cama", "Dormitorio", 699.99m);
+AgregarArticulo("Cómoda", "Dormitorio", 299.99m);
+AgregarArticulo("Ventilador", "Electrodomésticos", 79.99m);
+AgregarArticulo("Plancha", "Electrodomésticos", 49.99m);
+AgregarArticulo("Televisor", "Electrónica", 549.99m);
+AgregarArticulo("Reproductor Blu-ray", "Electrónica", 129.99m);
+
+// Casos de error
+
+//AgregarArticulo("M1crof0n0", "Música", 149.99m); Nombre cuenta con caracter/es invalido/s
+//AgregarArticulo("Micrófono", "Mús1c4", 149.99m); Categoria cuenta con caracter/es invalido/s
+//AgregarArticulo("Plancha", "Electrodomésticos", 49.99m); El articulo ingresado ya existe, reingrese uno nuevo.
+//AgregarArticulo("Bajo acustico", "Música", -10m); El monto del precio no puede ser negativo
+//AgregarArticulo("A", "Electrónica", 129.99m); El tamaño del nombre debe ser mayor o igual a 2, Ej: Té
+//AgregarArticulo("Reproductor Blu-ray", "Ele", 129.99m); El tamaño de la categoria debe ser mayor o igual a 4, Ej: Ropa
+//AgregarArticulo("", "Electrónica", 549.99m); El nombre es null o esta vacio
+//AgregarArticulo("Sábanas", "", 59.99m); La categoria es null o esta vacia
+
+
+
+}
+
+***********************************
+
+private void PrecargarUsuario()
+***********************************
+
+{
+// Casos de exito
+AgregarCliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123");
+AgregarCliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023");
+AgregarCliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1");
+AgregarCliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!");
+AgregarCliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024");
+AgregarCliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456");
+AgregarCliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789");
+AgregarCliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$");
+AgregarCliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!");
+AgregarCliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024");
+
+AgregarAdministrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!");
+AgregarAdministrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024");
+
+// Casos de error
+//AgregarUsuario("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"); El usuario ingresado ya esta registrado
+//AgregarUsuario("Alberto", "Ramírez", "alberto.ramirezoutlook.com", "Ramirez2024!"); El formato del email debe ser email @example
+//AgregarUsuario("David", "Hernández", "david.hernandez@yahoo.com", ""); La contraseña no puede estar vacia
+//AgregarUsuario("", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456"); El Nombre esta vacio
+//AgregarUsuario("Luis", "", "luis.fernandez@hotmail.com", "ClaveSegura#1"); El Apellido esta vacio
+
+}

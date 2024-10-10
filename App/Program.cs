@@ -12,13 +12,13 @@ namespace App
             _sistema.Precarga();
             do
             {
-                Console.WriteLine("" +
+                Console.WriteLine(
+                    "--- MENU ---\n" +
                     "1) Lista de cliente.\n" +
                     "2) Buscar articulo por categoria.\n" +
                     "3) Alta de articulo.\n" +
-                    "4) Listar publicaciones por fecha\n" +
-                    "5) Test listado de publicacion\n");
-                switch (InputNumber("Seleccione una opcion ó 0 para salir", 5))
+                    "4) Listar publicaciones por fecha.\n");
+                switch (InputNumber("Seleccione una opcion ó 0 para salir", 4))
                 {
                     case 1:
                         Console.Clear();
@@ -131,15 +131,24 @@ namespace App
         }
         public static void ListarArticulosXCat()
         {
+            int option;
             Mensaje("BUSQUEDA DE ARTICULOS POR CATEGORIA", "INICIO");
             int cont = 0;
             foreach (string cat in _sistema.Categorias)
             {
                 Console.WriteLine($"{++cont}) {cat}");
             }
-            foreach (Articulo articulo in _sistema.ObtenerArticulosXCat(_sistema.Categorias[InputNumber("Seleccione una categoria", _sistema.Categorias.Count) - 1]))
+            option = InputNumber("Seleccione una categoria ó 0 para salir.", _sistema.Categorias.Count);
+            if (!(option == 0))
             {
-                Console.WriteLine(articulo);
+                foreach (Articulo articulo in _sistema.ObtenerArticulosXCat(_sistema.Categorias[option - 1]))
+                {
+                    Console.WriteLine(articulo);
+                }
+            }
+            else
+            {
+                Console.Clear();
             }
 
         }
@@ -152,32 +161,41 @@ namespace App
             bool ok = false;
             codeError = string.Empty;
             Mensaje("ALTA DE ARTICULO", "INICIO");
-            nombre = InputString("Ingrese el nombre del articulo", 2);
-            categoria = InputString("Ingrese la categoria del articulo", 5);
+            nombre = InputString("Ingrese el nombre del articulo");
+            categoria = InputString("Ingrese la categoria del articulo");
             precio = InputNumber("Ingrese el precio del articulo");
             do
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(codeError))
+                    switch (codeError)
                     {
-                        switch (codeError)
-                        {
-                            case "E-CaracterNombre":
-                                nombre = InputString("Ingrese el nombre del articulo", 2);
-                                break;
-                            case "E-CaracterCategoria":
-                                categoria = InputString("Ingrese la categoria del articulo", 5);
-                                break;
-                            case "E-PrecioNeg":
-                                precio = InputNumber("Ingrese el precio del articulo");
-                                break;
-                            case "E-ArticuloExistente":
-                                ok = true;
-                                break;
-                        }
-                        codeError = string.Empty;
+                        case "E-CaracterNombre":
+                            nombre = InputString("Ingrese el nombre del articulo");
+                            break;
+                        case "E-NombreNulloEmpty":
+                            nombre = InputString("Ingrese el nombre del articulo");
+                            break;
+                        case "E-TamanioNombre":
+                            nombre = InputString("Ingrese el nombre del articulo");
+                            break;
+                        case "E-CaracterCategoria":
+                            categoria = InputString("Ingrese la categoria del articulo");
+                            break;
+                        case "E-CategoriaNullOEmpty":
+                            categoria = InputString("Ingrese la categoria del articulo");
+                            break;
+                        case "E-TamanioCategoria":
+                            categoria = InputString("Ingrese la categoria del articulo");
+                            break;
+                        case "E-PrecioNeg":
+                            precio = InputNumber("Ingrese el precio del articulo");
+                            break;
+                        case "E-ArticuloExistente":
+                            ok = true;
+                            break;
                     }
+                    codeError = string.Empty;
                     _sistema.AgregarArticulo(nombre, categoria, precio);
                     _sistema.AgregarCategoria(categoria);
                     Console.Clear();
@@ -199,7 +217,7 @@ namespace App
         }
 
         // Metodos de entrada
-        public static string InputString(string msj, int condicionT) // condicionT = condicion de tamaño
+        public static string InputString(string msj)
         {
             string data;
             do
@@ -208,15 +226,11 @@ namespace App
                 {
                     Console.Write($"{msj}: ");
                     data = Console.ReadLine();
-                    if (data.Length < condicionT)
-                    {
-                        throw new Exception();
-                    }
                     return data;
                 }
                 catch (Exception)
                 {
-                    Mensaje($"El valor ingresado debe tener al menos {condicionT} caracteres.", "ERROR");
+                    Mensaje($"El valor ingresado no es valido", "ERROR"); // Nunca entra, lo coloque por las dudas
                 }
             }
             while (true);
@@ -268,7 +282,7 @@ namespace App
             string fechaInput, option;
             DateTime fechaOut;
             bool aux = false;
-            fechaInput = InputString(msj, 10);
+            fechaInput = InputString(msj);
             option = "";
             do
             {
@@ -277,7 +291,7 @@ namespace App
                     switch (option)
                     {
                         case "E-Fecha":
-                            fechaInput = InputString("Ingrese la fecha 'desde', en formato dd/mm/yyyy", 10);
+                            fechaInput = InputString("Ingrese la fecha 'desde', en formato dd/mm/yyyy");
                             break;
                     }
 

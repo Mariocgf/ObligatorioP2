@@ -16,7 +16,7 @@
             Precio = precio;
         }
 
-        public void ValidarCaracteres(string letra, string tipo)
+        private void ValidarCaracteres(string letra, string tipo)
         {
             // 32 38-46 65-90 97-122 espacio y caracteres (mayusculas y minusculas)
             // (225-233-237-243-250) = á, é, í, ó, ú
@@ -37,6 +37,27 @@
                 throw new Exception($"E-Caracter{tipo}:{tipo} cuenta con caracter/es invalido/s");
             }
         }
+
+        private void ValidarNombreYCategoria(string nombre, string categoria)
+        {
+            if (string.IsNullOrEmpty(nombre))
+            {
+                throw new Exception("E-NombreNulloEmpty:El nombre es null o esta vacio");
+            }
+            if (string.IsNullOrEmpty(categoria))
+            {
+                throw new Exception("E-CategoriaNullOEmpty:La categoria es null o esta vacia");
+            }
+            if (nombre.Length < 2)
+            {
+                throw new Exception("E-TamanioNombre:El tamaño del nombre debe ser mayor o igual a 2, Ej. Té.");
+            }
+            if (categoria.Length < 4)
+            {
+                Console.WriteLine(categoria.Length);
+                throw new Exception("E-TamanioCategoria:El tamaño de la categoria debe ser mayor o igual a 4, Ej. Ropa.");
+            }
+        }
         private void ValidarPrecio(decimal precio)
         {
             if (precio < 0)
@@ -47,6 +68,7 @@
 
         public void Validar()
         {
+            ValidarNombreYCategoria(Nombre, Categoria);
             ValidarCaracteres(Nombre, "Nombre");
             ValidarCaracteres(Categoria, "Categoria");
             ValidarPrecio(Precio);

@@ -20,7 +20,6 @@
 
         public List<Articulo> Articulos { get { return _articulos; } }
 
-
         public Publicacion(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos)
         {
             Id = ++IdCount;
@@ -29,20 +28,29 @@
             FechaPublicacion = fechaPublicacion;
             _articulos = articulos;
         }
-
+        public virtual void ValidarNombre()
+        {
+            if (string.IsNullOrEmpty(Nombre))
+            {
+                throw new Exception("E-NombreEmpty:El nombre ingresado esta vacio");
+            }
+        }
         public virtual void Validar()
         {
-            
+            ValidarNombre();
         }
         public abstract decimal Monto();
-
-
         public override string ToString()
         {
             return $"Publicacion {Id}\n" +
                 $"Nombre: {Nombre}\n" +
                 $"Estado: {EstadoPublicacion}\n" +
                 $"Fecha de publicacion: {FechaPublicacion.ToString("d")}";
+        }
+        public override bool Equals(object? obj)
+        {
+            Publicacion publicacion = obj as Publicacion;
+            return publicacion != null && Nombre.ToLower() == publicacion.Nombre.ToLower();
         }
     }
 }
