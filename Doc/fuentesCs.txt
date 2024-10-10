@@ -366,7 +366,7 @@ namespace Dominio.Entidades
             Precio = precio;
         }
 
-        public void ValidarCaracteres(string letra, string tipo)
+        private void ValidarCaracteres(string letra, string tipo)
         {
             // 32 38-46 65-90 97-122 espacio y caracteres (mayusculas y minusculas)
             // (225-233-237-243-250) = á, é, í, ó, ú
@@ -388,7 +388,7 @@ namespace Dominio.Entidades
             }
         }
 
-        public void ValidarNombreYCategoria(string nombre, string categoria)
+        private void ValidarNombreYCategoria(string nombre, string categoria)
         {
             if (string.IsNullOrEmpty(nombre))
             {
@@ -522,7 +522,6 @@ namespace Dominio.Entidades
 
         public List<Articulo> Articulos { get { return _articulos; } }
 
-
         public Publicacion(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos)
         {
             Id = ++IdCount;
@@ -543,8 +542,6 @@ namespace Dominio.Entidades
             ValidarNombre();
         }
         public abstract decimal Monto();
-
-
         public override string ToString()
         {
             return $"Publicacion {Id}\n" +
