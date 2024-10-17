@@ -1,0 +1,8 @@
+﻿@using Dominio.Entidades;
+
+<h1>Vista usuario</h1>
+@foreach(Usuario item in ViewBag.Usuario)
+{
+    <p>@item.Nombre @item.Apellido - <em> @item.Email </em></p>
+        
+}

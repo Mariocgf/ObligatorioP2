@@ -9,7 +9,6 @@ namespace App
         static void Main(string[] args)
         {
             bool exit = false;
-            _sistema.Precarga();
             do
             {
                 Console.WriteLine(

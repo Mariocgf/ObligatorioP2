@@ -14,10 +14,15 @@ namespace Dominio
         public List<Articulo> Articulos { get { return _articulos; } }
         public List<string> Categorias { get { return _categorias; } }
 
+        public Sistema()
+        {
+            Precarga();
+        }
+
         // Metodo de agregacion
-        public void AgregarCliente( string nombre, 
-                                    string apellido, 
-                                    string email, 
+        public void AgregarCliente(string nombre,
+                                    string apellido,
+                                    string email,
                                     string contrasenia)
         {
             Usuario usuario = new Cliente(nombre, apellido, email, contrasenia);
@@ -49,10 +54,10 @@ namespace Dominio
             }
             _usuarios.Add(usuario);
         }
-        public void AgregarPublicacion( string nombre, 
-                                        Publicacion.Estado estado, 
-                                        DateTime fechaPublicacion, 
-                                        List<Articulo> articulos, 
+        public void AgregarPublicacion(string nombre,
+                                        Publicacion.Estado estado,
+                                        DateTime fechaPublicacion,
+                                        List<Articulo> articulos,
                                         bool enOferta)
         {
             if (articulos.Count == 0)
@@ -71,9 +76,9 @@ namespace Dominio
             publicacion.Validar();
             _publicaciones.Add(publicacion);
         }
-        public void AgregarPublicacion( string nombre, 
-                                        Publicacion.Estado estado, 
-                                        DateTime fechaPublicacion, 
+        public void AgregarPublicacion(string nombre,
+                                        Publicacion.Estado estado,
+                                        DateTime fechaPublicacion,
                                         List<Articulo> articulos)
         {
             if (articulos.Count == 0)
@@ -92,8 +97,8 @@ namespace Dominio
             publicacion.Validar();
             _publicaciones.Add(publicacion);
         }
-        public void AgregarArticulo( string nombre, 
-                                     string categoria, 
+        public void AgregarArticulo(string nombre,
+                                     string categoria,
                                      decimal precio)
         {
             Articulo articulo = new Articulo(nombre, categoria, precio);
@@ -123,6 +128,17 @@ namespace Dominio
             foreach (Usuario usuario in _usuarios)
             {
                 if (usuario.Email == email)
+                {
+                    return usuario;
+                }
+            }
+            return null;
+        }
+        public Usuario ObtenerUsuario(int id)
+        {
+            foreach (Usuario usuario in _usuarios)
+            {
+                if (usuario.Id == id)
                 {
                     return usuario;
                 }
@@ -166,9 +182,9 @@ namespace Dominio
         public List<Publicacion> ObtenerPublicacionesXFecha(DateTime fechaDesde, DateTime fechaHasta)
         {
             List<Publicacion> aux = new List<Publicacion>();
-            foreach(Publicacion publicacion in _publicaciones)
+            foreach (Publicacion publicacion in _publicaciones)
             {
-                if(publicacion.FechaPublicacion.Date > fechaDesde.Date && publicacion.FechaPublicacion.Date < fechaHasta.Date)
+                if (publicacion.FechaPublicacion.Date > fechaDesde.Date && publicacion.FechaPublicacion.Date < fechaHasta.Date)
                 {
                     aux.Add(publicacion);
                 }
@@ -186,7 +202,7 @@ namespace Dominio
             }
             return null;
         }
-        public void Precarga()
+        private void Precarga()
         {
             PrecargarArticulos();
             PrecargarUsuario();
