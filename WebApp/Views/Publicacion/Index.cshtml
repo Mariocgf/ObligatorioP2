@@ -1,0 +1,79 @@
+﻿@using Dominio.Entidades;
+@model List<Publicacion>;
+
+<h1>Publicaciones</h1>
+
+
+
+
+<div class="btn-group mb-5">
+    @if (ViewBag.publicacionView.ToString() == "Todas")
+    {
+        <a href="/publicacion" class="btn btn-primary active" aria-current="page">Todas</a>
+        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+    }
+    else if (ViewBag.publicacionView.ToString() == "Subasta")
+    {
+        <a href="/publicacion" class="btn btn-primary" aria-current="page">Todas</a>
+        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary active">Subastas</a>
+        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+    }
+    else
+    {
+        <a href="/publicacion" class="btn btn-primary" aria-current="page">Todas</a>
+        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary active">Ventas</a>
+
+    }
+</div>
+
+<div class="container-fluid">
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+
+        @foreach (Publicacion publi in ViewBag.publicaciones)
+        {
+            <div>
+                <div class="card">
+                    <h5 class="card-header">@publi.Nombre</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Articulos</h5>
+                        <p>Fecha de publicacion: @publi.FechaPublicacion.ToString("dd/MM/yyyy")</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (Articulo item in publi.Articulos)
+                        {
+                            <li class="list-group-item">@item.Nombre</li>
+                        }
+                    </ul>
+                    @if (publi is Venta)
+                    {
+                        <h5 class="m-3">Total: $@publi.Monto()</h5>
+                    }
+                    else
+                    {
+                        <h5 class="m-3">Ultima oferta: </h5>
+
+                    }
+                    <div class="card-footer text-body-secondary">
+                        <div class="row row-cols-2 align-items-center">
+                            <p class="mb-0">Estado: @publi.EstadoPublicacion</p>
+                            @if (publi.EstadoPublicacion.ToString() == "ABIERTA")
+                            {
+                                @if (publi is Venta)
+                                {
+                                    <a href="#" class="btn btn-primary">Comprar</a>
+                                }
+                                else
+                                {
+                                    <a href="#" class="btn btn-primary">Ofertar</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

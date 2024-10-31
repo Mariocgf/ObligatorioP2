@@ -5,7 +5,7 @@ namespace WebApp.Controllers
 {
     public class UsuarioController : Controller
     {
-        Sistema _sistema = new Sistema();
+        Sistema _sistema = Sistema.Instancia;
         public IActionResult Index()
         {
             // Puede retornar vista - redireccion - json

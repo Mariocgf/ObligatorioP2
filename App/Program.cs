@@ -11,6 +11,10 @@ namespace App
             bool exit = false;
             do
             {
+                foreach (Publicacion p in _sistema.Publicaciones)
+                {
+                    Console.WriteLine(p);
+                }
                 Console.WriteLine(
                     "--- MENU ---\n" +
                     "1) Lista de cliente.\n" +

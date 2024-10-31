@@ -8,13 +8,22 @@ namespace Dominio
         private List<Publicacion> _publicaciones = new List<Publicacion>();
         private List<Articulo> _articulos = new List<Articulo>();
         private List<string> _categorias = new List<string>();
+        private static Sistema _instancia;
 
         public List<Usuario> Usuarios { get { return _usuarios; } }
         public List<Publicacion> Publicaciones { get { return _publicaciones; } }
         public List<Articulo> Articulos { get { return _articulos; } }
         public List<string> Categorias { get { return _categorias; } }
+        public static Sistema Instancia
+        {
+            get
+            {
+                if (_instancia == null) _instancia = new Sistema();
+                return _instancia;
+            }
+        }
 
-        public Sistema()
+        private Sistema()
         {
             Precarga();
         }
@@ -202,6 +211,30 @@ namespace Dominio
             }
             return null;
         }
+        public List<Publicacion> ObtenerPublicacionVentas()
+        {
+            List<Publicacion> aux = new List<Publicacion>();
+            foreach(Publicacion publicacion in _publicaciones)
+            {
+                if(publicacion is Venta)
+                {
+                    aux.Add(publicacion);
+                }
+            }
+            return aux;
+        }
+        public List<Publicacion> ObtenerPublicacionSubasta()
+        {
+            List<Publicacion> aux = new List<Publicacion>();
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Subasta)
+                {
+                    aux.Add(publicacion);
+                }
+            }
+            return aux;
+        }
         private void Precarga()
         {
             PrecargarArticulos();
@@ -212,9 +245,9 @@ namespace Dominio
         private void PrecargarPublicaciones()
         {
             //  Casos de exito
-            AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
+            AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
             AgregarPublicacion("Kit de Entretenimiento Electrónico", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [ObtenerArticulo(6), ObtenerArticulo(24), ObtenerArticulo(35)], false);
-            AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(51), ObtenerArticulo(54), ObtenerArticulo(53)], true);
+            AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(5), ObtenerArticulo(4), ObtenerArticulo(3)], true);
             AgregarPublicacion("Set Fotografía Profesional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(3), ObtenerArticulo(8), ObtenerArticulo(28)], false);
             AgregarPublicacion("Kit de Cocina Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 22), [ObtenerArticulo(26), ObtenerArticulo(30), ObtenerArticulo(27)], true);
             AgregarPublicacion("Combo Tecnología para Oficina", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 18), [ObtenerArticulo(7), ObtenerArticulo(21), ObtenerArticulo(2)], false);

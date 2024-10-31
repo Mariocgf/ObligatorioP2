@@ -42,10 +42,16 @@
         public abstract decimal Monto();
         public override string ToString()
         {
+            string aux = "";
+            foreach (Articulo articulo in _articulos)
+            {
+                aux += articulo.Nombre + " ";
+            }
             return $"Publicacion {Id}\n" +
                 $"Nombre: {Nombre}\n" +
                 $"Estado: {EstadoPublicacion}\n" +
-                $"Fecha de publicacion: {FechaPublicacion.ToString("d")}";
+                $"Fecha de publicacion: {FechaPublicacion.ToString("d")}\n" +
+                $"Articulos: {aux}";
         }
         public override bool Equals(object? obj)
         {

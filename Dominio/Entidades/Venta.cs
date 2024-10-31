@@ -19,6 +19,7 @@
             {
                 return total - total * 0.20m;
             }
+            total = Math.Round(total, 2);
             return total;
         }
 
