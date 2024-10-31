@@ -17,10 +17,9 @@
             }
             if (EnOfertaRelampago)
             {
-                return total - total * 0.20m;
+                total -= total * 0.20m;
             }
-            total = Math.Round(total, 2);
-            return total;
+            return Math.Round(total, 2);
         }
 
         public override string ToString()

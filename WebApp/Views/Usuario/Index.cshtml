@@ -1,8 +1,11 @@
 ﻿@using Dominio.Entidades;
 
-<h1>Vista usuario</h1>
-@foreach(Usuario item in ViewBag.Usuario)
-{
-    <p>@item.Nombre @item.Apellido - <em> @item.Email </em></p>
-        
-}
+
+<div>
+    <h1>Inicio sesion</h1>
+    <form action="/" method="post">
+        <input type="email" name="Correo" value="" placeholder="Ingrese correo"/>
+        <input type="text" name="Contrasenia" placeholder="Ingrese contraseia"/>
+    </form>
+</div>
+

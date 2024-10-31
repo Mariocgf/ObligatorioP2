@@ -6,16 +6,18 @@ namespace WebApp.Controllers
     public class UsuarioController : Controller
     {
         Sistema _sistema = Sistema.Instancia;
+        [HttpGet]
         public IActionResult Index()
         {
             // Puede retornar vista - redireccion - json
-            ViewBag.Usuario = _sistema.Usuarios;
+            //ViewBag.Usuario = _sistema.Usuarios;
             return View();
         }
 
-        public IActionResult Ver(int id)
+        [HttpPost]
+        public IActionResult Login()
         {
-            ViewBag.Usuario = _sistema.ObtenerUsuario(id);
+
             return View();
         }
     }
