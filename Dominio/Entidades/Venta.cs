@@ -4,7 +4,7 @@
     {
         public bool EnOfertaRelampago { get; set; }
 
-        public Venta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
+        public Venta(string nombre, Estado estadoPublicacion, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estadoPublicacion, fechaPublicacion, articulos)
         {
             EnOfertaRelampago = enOferta;
         }

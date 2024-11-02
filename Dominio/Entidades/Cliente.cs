@@ -10,6 +10,12 @@
         {
             Billetera = 0;
         }
+
+        public void Deconstruct(out string nombre, out string apellido, out string email, out decimal billetera)
+        {
+            base.Deconstruct(out nombre, out apellido, out email);
+            billetera = Billetera;
+        }
         public override void Depositar(decimal monto)
         {
             if (monto < 0)

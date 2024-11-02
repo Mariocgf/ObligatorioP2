@@ -1,24 +1,30 @@
 ﻿@using Dominio.Entidades;
 
-<div class="w-25 m-auto">
-    <h1 class="text-center">Inicio sesion</h1>
-
-    <form method="post">
-        @if (!string.IsNullOrEmpty(ViewBag.msj))
+<div class="m-auto">
+    <h1>@Context.Session.GetString("nombre") @Context.Session.GetString("apellido")</h1>
+    <p>Correo: @Context.Session.GetString("email")</p>
+    <p>Billetera: $@Context.Session.GetString("billetera")</p>
+    @if (!string.IsNullOrEmpty(ViewBag.msj))
+    {
+        if (ViewBag.msjTipo == "success")
+        {
+            <div class="alert alert-success" role="alert">
+                @ViewBag.msj
+            </div>
+        }
+        else
         {
             <div class="alert alert-danger" role="alert">
                 @ViewBag.msj
             </div>
         }
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" placeholder="example@example.com">
+    }
+    <form action="Usuario/Depositar" method="post">
+        <div class="input-group mb-3">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" name="monto">
         </div>
-        <div class="mb-3">
-            <label for="contrasenia" class="form-label">Contraseña</label>
-            <input type="text" name="contrasenia" class="form-control" id="contrasenia" placeholder="********">
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Log in</button>
+        <button type="submit" class="btn btn-primary">Depositar</button>
     </form>
 </div>
 

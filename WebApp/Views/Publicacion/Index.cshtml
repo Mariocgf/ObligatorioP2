@@ -6,31 +6,45 @@
 <div class="btn-group mb-5">
     @if (ViewBag.publicacionView.ToString() == "Todas")
     {
-        <a href="/publicacion" class="btn btn-primary active" aria-current="page">Todas</a>
-        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
-        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary active" aria-current="page">Todas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
     }
     else if (ViewBag.publicacionView.ToString() == "Subasta")
     {
-        <a href="/publicacion" class="btn btn-primary" aria-current="page">Todas</a>
-        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary active">Subastas</a>
-        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary active">Subastas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
     }
     else
     {
-        <a href="/publicacion" class="btn btn-primary" aria-current="page">Todas</a>
-        <a href="/publicacion/MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
-        <a href="/publicacion/MostrarPublicacionVentas" class="btn btn-primary active">Ventas</a>
+        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary active">Ventas</a>
     }
 </div>
-
+@if (!string.IsNullOrEmpty(ViewBag.msj))
+{
+    if (ViewBag.msjTipo == "success")
+    {
+        <div class="alert alert-success" role="alert">
+            @ViewBag.msj
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.msj
+        </div>
+    }
+}
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-3 g-3">
         @foreach (Publicacion publi in ViewBag.publicaciones)
         {
             <div>
                 <div class="card">
-                        <h5 class="card-header">
+                    <h5 class="card-header">
                         @publi.Nombre
                         @if (publi is Venta)
                         {
@@ -40,7 +54,7 @@
                                 <span> - En oferta</span>
                             }
                         }
-                        </h5>
+                    </h5>
                     <div class="card-body">
                         <h5 class="card-title">Articulos</h5>
                         <p>Fecha de publicacion: @publi.FechaPublicacion.ToString("dd/MM/yyyy")</p>
@@ -66,7 +80,7 @@
                             {
                                 @if (publi is Venta)
                                 {
-                                    <a href="#" class="btn btn-primary">Comprar</a>
+                                    <a href="/publicacion/Comprar/@publi.Id" class="btn btn-primary">Comprar</a>
                                 }
                                 else
                                 {

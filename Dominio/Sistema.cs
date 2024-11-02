@@ -243,7 +243,25 @@ namespace Dominio
             aux = true;
             return aux;
         }
-
+        public Venta ObtenerPublicacionVenta (int id)
+        {
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Venta && publicacion.Id == id)
+                    return (Venta)publicacion;
+            }
+            return null;
+        }
+        public void Comprar(Venta publicacion, Cliente cliente)
+        {
+            if (!(publicacion.EstadoPublicacion == Publicacion.Estado.ABIERTA))
+                throw new Exception("E-PublicacionCerrada:Esta publicacion ya esta cerrada.");
+            if (publicacion.Monto() > cliente.Billetera)
+                throw new Exception("E-SaldoInsuficiente:Saldo insuficiente.");
+            publicacion.Cliente = cliente;
+            publicacion.EstadoPublicacion = Publicacion.Estado.CERRADA;
+            cliente.Billetera -= publicacion.Monto();
+        }
         private void Precarga()
         {
             PrecargarArticulos();

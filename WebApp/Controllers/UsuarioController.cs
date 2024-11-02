@@ -1,4 +1,5 @@
 ﻿using Dominio;
+using Dominio.Entidades;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
@@ -7,33 +8,46 @@ namespace WebApp.Controllers
     {
         Sistema _sistema = Sistema.Instancia;
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string msj)
         {
-            // Puede retornar vista - redireccion - json
-            //ViewBag.Usuario = _sistema.Usuarios;
-            string session = HttpContext.Session.GetString("sesion");
-            if (!string.IsNullOrEmpty(session))
-                return Redirect("/publicacion");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("email")))
+                return Redirect("/");
+            if (!string.IsNullOrEmpty(msj))
+            {
+                string[] values = msj.Split(':');
+                if (values.Length > 1)
+                {
+                    ViewBag.msjTipo = values[0];
+                    ViewBag.msj = values[1];
+                }
+                else
+                {
+                    ViewBag.msj = msj;
+                }
+            }
             return View();
         }
+        [HttpGet]
 
         [HttpPost]
-        public IActionResult Index(string email, string contrasenia)
+        public IActionResult Depositar(decimal monto)
         {
+            string email = HttpContext.Session.GetString("email");
+            if(string.IsNullOrEmpty(email))
+                return Redirect("/");
             try
             {
-                if (_sistema.Login(email, contrasenia))
-                {
-                    HttpContext.Session.SetString("sesion", email);
-                }
-                return Redirect("/publicacion");
+                Cliente cliente = (Cliente)_sistema.ObtenerUsuario(email);
+                cliente.Depositar(monto);
+                HttpContext.Session.SetString("billetera", cliente.Billetera.ToString());
+                ViewBag.msj = "success:Deposito realizado correctamente";
             }
             catch (Exception error)
             {
                 ViewBag.msj = error.Message.Split(":")[1];
             }
-
-            return View("index");
+            return RedirectToAction("index", new {msj = ViewBag.msj});
         }
+
     }
 }

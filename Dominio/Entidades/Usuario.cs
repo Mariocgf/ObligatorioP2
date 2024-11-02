@@ -24,7 +24,12 @@ namespace Dominio.Entidades
             Email = email;
             Contrasenia = contrasenia;
         }
-
+        public void Deconstruct (out string nombre, out string apellido, out string email)
+        {
+            nombre = Nombre;
+            apellido = Apellido;
+            email = Email;
+        }
         public virtual void ValidarEmailFormato()
         {
             bool arroba = false;

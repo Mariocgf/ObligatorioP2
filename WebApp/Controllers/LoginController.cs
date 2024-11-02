@@ -1,5 +1,6 @@
 ﻿using Dominio;
 using Dominio.Entidades;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
@@ -15,7 +16,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Index(string msj)
         {
-            string session = HttpContext.Session.GetString("sesion");
+            string session = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(session))
                 return Redirect("/publicacion");
             ViewBag.tipo = Tipo.Iniciar;
@@ -41,8 +42,16 @@ namespace WebApp.Controllers
             try
             {
                 if (_sistema.Login(email, contrasenia))
-                    HttpContext.Session.SetString("sesion", email);
-
+                    HttpContext.Session.SetString("email", email);
+                Usuario aux = _sistema.ObtenerUsuario(email);
+                if (aux is Cliente)
+                {
+                    Cliente cliente = (Cliente)aux;
+                    var (nombre, apellido,correo, billetera) = cliente;
+                    HttpContext.Session.SetString("nombre", nombre);
+                    HttpContext.Session.SetString("apellido", apellido);
+                    HttpContext.Session.SetString("billetera", billetera.ToString());
+                }
                 return Redirect("/publicacion");
             }
             catch (Exception error)
@@ -55,7 +64,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Registrar()
         {
-            string session = HttpContext.Session.GetString("sesion");
+            string session = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(session))
                 return Redirect("/publicacion");
             ViewBag.tipo = Tipo.Registrar;
