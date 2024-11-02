@@ -5,16 +5,14 @@ namespace App
 {
     internal class Program
     {
-        static Sistema _sistema = new Sistema();
+        static Sistema _sistema = Sistema.Instancia;
         static void Main(string[] args)
         {
+            
             bool exit = false;
             do
             {
-                foreach (Publicacion p in _sistema.Publicaciones)
-                {
-                    Console.WriteLine(p);
-                }
+                Console.WriteLine((int)'2');
                 Console.WriteLine(
                     "--- MENU ---\n" +
                     "1) Lista de cliente.\n" +

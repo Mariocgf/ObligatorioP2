@@ -4,6 +4,8 @@
     {
         public decimal Billetera { get; set; }
 
+        public Cliente() { }
+
         public Cliente(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia)
         {
             Billetera = 0;

@@ -1,0 +1,103 @@
+﻿@using Dominio.Entidades;
+@model Cliente;
+
+<div class="w-50 m-auto card p-5">
+    @{
+        int hora = DateTime.Now.Hour;
+        if (hora >= 6 && hora < 12)
+        {
+            <h1 class="text-center mb-3">Buenos dias</h1>
+        }
+        else if (hora > 12 && hora < 19)
+        {
+            <h1 class="text-center mb-3">Buenas tarde</h1>
+
+        }
+        else
+        {
+            <h1 class="text-center mb-3">Buenas noche</h1>
+        }
+    }
+    <ul class="nav nav-tabs justify-content-center">
+        @if (ViewBag.tipo.ToString() == "Iniciar")
+        {
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Login" asp-action="Index">Iniciar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " asp-controller="Login" asp-action="Registrar">Registrarse</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link " aria-current="page" asp-controller="Login" asp-action="Index">Iniciar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" asp-controller="Login" asp-action="Registrar">Registrarse</a>
+            </li>
+        }
+
+        </li>
+    </ul>
+    @if (ViewBag.tipo.ToString() == "Iniciar")
+    {
+        <form method="post" class="mt-3">
+            @if (!string.IsNullOrEmpty(ViewBag.msj))
+            {
+                if (ViewBag.msjTipo == "success")
+                {
+                    <div class="alert alert-success" role="alert">
+                        @ViewBag.msj
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ViewBag.msj
+                    </div>
+                }
+            }
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="email" placeholder="example@example.com">
+            </div>
+            <div class="mb-3">
+                <label for="contrasenia" class="form-label">Contraseña</label>
+                <input type="password" name="contrasenia" class="form-control" id="contrasenia" placeholder="********">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Log in</button>
+        </form>
+    }
+    else
+    {
+        <form method="post" class="mt-3">
+            @if (!string.IsNullOrEmpty(ViewBag.msj))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.msj
+                </div>
+            }
+            <div class="row">
+
+                <div class="mb-3 col">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Joe" value="@Model.Nombre" required>
+                </div>
+                <div class="mb-3 col">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Dust" value="@Model.Apellido" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="email" placeholder="example@example.com" value="@Model.Email" required>
+            </div>
+            <div class="mb-3">
+                <label for="contrasenia" class="form-label">Contraseña</label>
+                <input type="password" name="contrasenia" class="form-control" id="contrasenia" placeholder="********" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrar</button>
+        </form>
+    }
+</div>

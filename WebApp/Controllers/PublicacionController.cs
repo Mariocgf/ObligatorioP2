@@ -16,6 +16,11 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            string session = HttpContext.Session.GetString("sesion");
+            if (string.IsNullOrEmpty(session))
+            {
+                return Redirect("/");
+            }
             ViewBag.publicaciones = _sistema.Publicaciones;
             ViewBag.publicacionView = PublicacionView.Todas;
             return View();

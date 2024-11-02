@@ -1,4 +1,6 @@
-﻿namespace Dominio.Entidades
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace Dominio.Entidades
 {
     public abstract class Usuario
     {
@@ -8,6 +10,11 @@
         public string Apellido { get; set; }
         public string Email { get; set; }
         public string Contrasenia { get; set; }
+
+        public Usuario()
+        {
+            Id = ++IdCount;
+        }
 
         public Usuario(string nombre, string apellido, string email, string contrasenia)
         {
@@ -35,10 +42,22 @@
         }
         public virtual void ValidarContrasenia()
         {
+            bool number = false;
+            bool word = false;
+            int[] caracteresEspeciales = [32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250];
             if (string.IsNullOrEmpty(Contrasenia))
-            {
                 throw new Exception("E-ContraseniaEmpty:La contraseña no puede estar vacia");
+            if (Contrasenia.Length < 7)
+                throw new Exception("E-ContraseniaTamanio:La contraseña debe tener como minimo 8 caracteres.");
+            foreach (char elem in Contrasenia)
+            {
+                if ((caracteresEspeciales.Contains((int)elem) || ((int)elem >= 38 && (int)elem <= 46) || ((int)elem >= 65 && (int)elem <= 90) || ((int)elem >= 97 && (int)elem <= 122)) && !word)
+                    word = true;
+                if (((int)elem <= 57 && (int)elem >= 48) && !number)
+                    number = true;
             }
+            if (!number || !word)
+                throw new Exception("E-ContraseniaNoNumero:La contraseña debe ser alfanumerica");
         }
         public virtual void ValidarCampo(string data, string tipo)
         {

@@ -29,12 +29,8 @@ namespace Dominio
         }
 
         // Metodo de agregacion
-        public void AgregarCliente(string nombre,
-                                    string apellido,
-                                    string email,
-                                    string contrasenia)
+        public void AgregarCliente(Usuario usuario)
         {
-            Usuario usuario = new Cliente(nombre, apellido, email, contrasenia);
             if (usuario == null)
             {
                 throw new Exception("E-UsuarioNull:El usuario ingresado es nulo.");
@@ -46,12 +42,8 @@ namespace Dominio
             }
             _usuarios.Add(usuario);
         }
-        public void AgregarAdministrador(string nombre,
-                                    string apellido,
-                                    string email,
-                                    string contrasenia)
+        public void AgregarAdministrador(Usuario usuario)
         {
-            Usuario usuario = new Administrador(nombre, apellido, email, contrasenia);
             if (usuario == null)
             {
                 throw new Exception("E-UsuarioNull:El usuario ingresado es nulo.");
@@ -214,9 +206,9 @@ namespace Dominio
         public List<Publicacion> ObtenerPublicacionVentas()
         {
             List<Publicacion> aux = new List<Publicacion>();
-            foreach(Publicacion publicacion in _publicaciones)
+            foreach (Publicacion publicacion in _publicaciones)
             {
-                if(publicacion is Venta)
+                if (publicacion is Venta)
                 {
                     aux.Add(publicacion);
                 }
@@ -235,6 +227,23 @@ namespace Dominio
             }
             return aux;
         }
+
+        public bool Login(string email, string contrasenia)
+        {
+            bool aux = false;
+            Usuario user = ObtenerUsuario(email);
+            if (user == null)
+            {
+                throw new Exception("E-UsuarioNoExistente:El usuario no existe :(");
+            }
+            if (user.Contrasenia != contrasenia)
+            {
+                throw new Exception("E-ContraseniaIncorrecta:La contraseña ingresada no es correcta.");
+            }
+            aux = true;
+            return aux;
+        }
+
         private void Precarga()
         {
             PrecargarArticulos();
@@ -348,19 +357,19 @@ namespace Dominio
         private void PrecargarUsuario()
         {
             // Casos de exito
-            AgregarCliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123");
-            AgregarCliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023");
-            AgregarCliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1");
-            AgregarCliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!");
-            AgregarCliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024");
-            AgregarCliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456");
-            AgregarCliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789");
-            AgregarCliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$");
-            AgregarCliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!");
-            AgregarCliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024");
+            AgregarCliente(new Cliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123"));
+            AgregarCliente(new Cliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023"));
+            AgregarCliente(new Cliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1"));
+            AgregarCliente(new Cliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!"));
+            AgregarCliente(new Cliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024"));
+            AgregarCliente(new Cliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456"));
+            AgregarCliente(new Cliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789"));
+            AgregarCliente(new Cliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$"));
+            AgregarCliente(new Cliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!"));
+            AgregarCliente(new Cliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"));
 
-            AgregarAdministrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!");
-            AgregarAdministrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024");
+            AgregarAdministrador(new Administrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!"));
+            AgregarAdministrador(new Administrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024"));
 
             // Casos de error
             //AgregarUsuario("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"); El usuario ingresado ya esta registrado

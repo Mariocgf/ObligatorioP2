@@ -11,14 +11,29 @@ namespace WebApp.Controllers
         {
             // Puede retornar vista - redireccion - json
             //ViewBag.Usuario = _sistema.Usuarios;
+            string session = HttpContext.Session.GetString("sesion");
+            if (!string.IsNullOrEmpty(session))
+                return Redirect("/publicacion");
             return View();
         }
 
         [HttpPost]
-        public IActionResult Login()
+        public IActionResult Index(string email, string contrasenia)
         {
+            try
+            {
+                if (_sistema.Login(email, contrasenia))
+                {
+                    HttpContext.Session.SetString("sesion", email);
+                }
+                return Redirect("/publicacion");
+            }
+            catch (Exception error)
+            {
+                ViewBag.msj = error.Message.Split(":")[1];
+            }
 
-            return View();
+            return View("index");
         }
     }
 }

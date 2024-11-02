@@ -2,6 +2,7 @@
 {
     public class Administrador : Usuario
     {
+        public Administrador() { }
         public Administrador(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia) 
         { 
         }
