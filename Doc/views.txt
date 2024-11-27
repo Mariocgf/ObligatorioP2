@@ -446,12 +446,3 @@ Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Views\Usuario\Index.csht
     </form>
 </div>
 
-
-***********************************
-Archivo: Ver.cshtml
-Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Views\Usuario\Ver.cshtml
-***********************************
-@using Dominio.Entidades
-
-<h1>Vista del usuario @ViewBag.Usuario.Id</h1>
-<p>Fecha: @DateTime.Now.Date</p>
