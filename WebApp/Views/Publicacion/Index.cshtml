@@ -2,27 +2,29 @@
 @model List<Publicacion>;
 
 <h1>Publicaciones</h1>
-
-<div class="btn-group mb-5">
-    @if (ViewBag.publicacionView.ToString() == "Todas")
-    {
-        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary active" aria-current="page">Todas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
-    }
-    else if (ViewBag.publicacionView.ToString() == "Subasta")
-    {
-        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary active">Subastas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
-    }
-    else
-    {
-        <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
-        <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary active">Ventas</a>
-    }
-</div>
+@if (Context.Session.GetString("rol") == "CLIENTE")
+{
+    <div class="btn-group mb-5">
+        @if (ViewBag.publicacionView.ToString() == "Todas")
+        {
+            <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary active" aria-current="page">Todas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+        }
+        else if (ViewBag.publicacionView.ToString() == "Subasta")
+        {
+            <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary active">Subastas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary">Ventas</a>
+        }
+        else
+        {
+            <a asp-controller="Publicacion" asp-action="Index" class="btn btn-primary" aria-current="page">Todas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionSubasta" class="btn btn-primary">Subastas</a>
+            <a asp-controller="Publicacion" asp-action="MostrarPublicacionVentas" class="btn btn-primary active">Ventas</a>
+        }
+    </div>
+}
 @if (!string.IsNullOrEmpty(ViewBag.msj))
 {
     if (ViewBag.msjTipo == "success")
@@ -40,57 +42,101 @@
 }
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-3 g-3">
-        @foreach (Publicacion publi in ViewBag.publicaciones)
+        @if (ViewBag.publicaciones.Count != 0)
         {
-            <div>
-                <div class="card">
-                    <h5 class="card-header">
-                        @publi.Nombre
+
+            @foreach (Publicacion publi in ViewBag.publicaciones)
+            {
+                <div>
+                    <div class="card">
+                        <h5 class="card-header">
+                            @publi.Nombre
+                            @if (publi is Venta)
+                            {
+                                Venta aux = publi as Venta;
+                                if (aux.EnOfertaRelampago)
+                                {
+                                    <span> - En oferta</span>
+                                }
+                            }
+                        </h5>
+                        <div class="card-body">
+                            <h5 class="card-title">Articulos</h5>
+                            <p>Fecha de publicacion: @publi.FechaPublicacion.ToString("dd/MM/yyyy")</p>
+                            @if (!(@publi.FechaTerminacionPublicacion == new DateTime(01, 01, 0001)))
+                            {
+                                <p>Fecha de finalizacion: @publi.FechaTerminacionPublicacion.ToString("dd/MM/yyyy")</p>
+                            }
+                        </div>
+                        <hr />
                         @if (publi is Venta)
                         {
-                            Venta aux = publi as Venta;
-                            if (aux.EnOfertaRelampago)
+                            <h5 class="m-3">Total: $@publi.Monto()</h5>
+                            if (publi.Finalizador != null)
                             {
-                                <span> - En oferta</span>
+                                <h5 class="m-3">Finalizador: @publi.Finalizador.ToString()</h5>
                             }
                         }
-                    </h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Articulos</h5>
-                        <p>Fecha de publicacion: @publi.FechaPublicacion.ToString("dd/MM/yyyy")</p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        @foreach (Articulo item in publi.Articulos)
+                        else
                         {
-                            <li class="list-group-item">@item.Nombre</li>
-                        }
-                    </ul>
-                    @if (publi is Venta)
-                    {
-                        <h5 class="m-3">Total: $@publi.Monto()</h5>
-                    }
-                    else
-                    {
-                        <h5 class="m-3">Ultima oferta: </h5>
-                    }
-                    <div class="card-footer text-body-secondary">
-                        <div class="row row-cols-2 align-items-center">
-                            <p class="mb-0">Estado: @publi.EstadoPublicacion</p>
-                            @if (publi.EstadoPublicacion.ToString() == "ABIERTA")
+                            if (publi is Subasta subasta)
                             {
-                                @if (publi is Venta)
+                                if (subasta.EstadoPublicacion.ToString() == "ABIERTA")
                                 {
-                                    <a href="/publicacion/Comprar/@publi.Id" class="btn btn-primary">Comprar</a>
+
+                                    if (subasta.ListaOferta.Count() == 0)
+                                    {
+                                        <h5 class="m-3">Iniciar oferta con $@publi.Monto()</h5>
+                                    }
+                                    else
+                                    {
+                                        <h5 class="m-3">Ultima oferta: $@subasta.ListaOferta[0].Monto </h5>
+                                    }
+                                }
+                                if (subasta.EstadoPublicacion.ToString() == "CERRADA")
+                                {
+                                    <h5 class="m-3">Finalizador: @subasta.Finalizador.ToString()</h5>
+                                    <h5 class="m-3">Mejor ofertante: @subasta.Cliente.ToString()</h5>
+                                }
+                            }
+                        }
+                        <div class="card-footer text-body-secondary">
+                            <div class="row row-cols-2 align-items-center">
+                                <p class="mb-0">Estado: @publi.EstadoPublicacion</p>
+                                @if (Context.Session.GetString("rol") == "CLIENTE")
+                                {
+                                    if (publi.EstadoPublicacion.ToString() == "ABIERTA")
+                                    {
+                                        if (publi is Venta)
+                                        {
+                                            <a asp-controller="Publicacion" asp-action="Comprar" asp-route-id="@publi.Id" class="btn btn-primary">Comprar</a>
+                                        }
+                                        else
+                                        {
+                                            <form action="/publicacion/Ofertar/@publi.Id" class="mt-12" method="post">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" aria-label="" name="monto" step="0.01">
+                                                </div>
+                                                <button class="btn btn-primary" type="submit">Ofertar</button>
+                                                @* <a asp-controller="Publicacion" asp-action="Ofertar" asp-route-id="@publi.Id" class="btn btn-primary">Ofertar</a> *@
+                                            </form>
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    <a href="#" class="btn btn-primary">Ofertar</a>
+                                    <a href="/publicacion/Editar/@publi.Id" class="btn btn-primary">Editar</a>
                                 }
-                            }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+        }
+        else
+        {
+            <h1>No hay publicaciones para mostrar</h1>
         }
     </div>
 </div>

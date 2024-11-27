@@ -2,7 +2,7 @@
 
 namespace Dominio.Entidades
 {
-    public abstract class Usuario
+    public abstract class Usuario : IEquatable<Usuario>
     {
         private static int IdCount { get; set; }
         public int Id { get; set; }
@@ -15,7 +15,6 @@ namespace Dominio.Entidades
         {
             Id = ++IdCount;
         }
-
         public Usuario(string nombre, string apellido, string email, string contrasenia)
         {
             Id = ++IdCount;
@@ -24,11 +23,10 @@ namespace Dominio.Entidades
             Email = email;
             Contrasenia = contrasenia;
         }
-        public void Deconstruct (out string nombre, out string apellido, out string email)
+        public void Deconstruct(out string nombre, out string apellido)
         {
             nombre = Nombre;
             apellido = Apellido;
-            email = Email;
         }
         public virtual void ValidarEmailFormato()
         {
@@ -52,7 +50,7 @@ namespace Dominio.Entidades
             int[] caracteresEspeciales = [32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250];
             if (string.IsNullOrEmpty(Contrasenia))
                 throw new Exception("E-ContraseniaEmpty:La contraseña no puede estar vacia");
-            if (Contrasenia.Length < 7)
+            if (Contrasenia.Length < 8)
                 throw new Exception("E-ContraseniaTamanio:La contraseña debe tener como minimo 8 caracteres.");
             foreach (char elem in Contrasenia)
             {
@@ -81,12 +79,16 @@ namespace Dominio.Entidades
         public abstract void Depositar(decimal monto);
         public override string ToString()
         {
-            return $"Usuario: {Nombre} {Apellido}\nEmail: {Email}";
+            return $"{Nombre} {Apellido}";
         }
         public override bool Equals(object? obj)
         {
             Usuario usuario = obj as Usuario;
             return usuario != null && Email.ToLower() == usuario.Email.ToLower();
+        }
+        public bool Equals(Usuario other)
+        {
+            return other != null && Email.Equals(other.Email);
         }
     }
 }

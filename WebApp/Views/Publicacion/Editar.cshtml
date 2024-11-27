@@ -1,0 +1,34 @@
+﻿@using Dominio.Entidades;
+
+<div class="container-fluid">
+    <h1>@ViewBag.publicacion.Nombre - @ViewBag.publicacion.EstadoPublicacion</h1>
+    <p>Fecha de publicacion: @ViewBag.publicacion.FechaPublicacion.ToString("dd/MM/yyyy")</p>
+    @if (@ViewBag.publicacion.FechaTerminacionPublicacion != new DateTime(01, 01, 0001))
+    {
+        <p>Fecha de finalizacion: @ViewBag.publicacion.FechaTerminacionPublicacion.ToString("dd/MM/yyyy")</p>
+    }
+    @if (ViewBag.publicacion is Venta)
+    {
+        if (@ViewBag.publicacion.Cliente == null)
+        {
+            <p>Cliente: ninguno.</p>
+        }
+        else
+        {
+            <p>Cliente: @ViewBag.publicacion.Cliente.Nombre @ViewBag.publicacion.Cliente.Apellido</p>
+        }
+        <p>En oferta: @ViewBag.publicacion.EnOfertaRelampago</p>
+        <p>Monto: $@ViewBag.publicacion.Monto()</p>
+    }
+    else
+    {
+        if (ViewBag.publicacion.EstadoPublicacion.ToString() == "ABIERTA")
+        {
+            <a asp-controller="Publicacion" asp-action="Finalizar" asp-route-id="@ViewBag.publicacion.Id" class="btn btn-danger">Finalizar subasta</a>
+        }
+        else
+        {
+            <a asp-controller="Publicacion" asp-action="Finalizar" asp-route-id="@ViewBag.publicacion.Id" class="btn btn-outline-danger disabled">Finalizar subasta</a>
+        }
+    }
+</div>

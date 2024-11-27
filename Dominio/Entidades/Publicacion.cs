@@ -1,6 +1,6 @@
 ﻿namespace Dominio.Entidades
 {
-    public abstract class Publicacion
+    public abstract class Publicacion : IComparable<Publicacion>, IEquatable<Publicacion>
     {
         public enum Estado
         {
@@ -14,7 +14,8 @@
         public Estado EstadoPublicacion { get; set; }
         public DateTime FechaPublicacion { get; set; }
         public Cliente Cliente { get; set; }
-        public Usuario Usuario { get; set; } 
+        public Usuario Finalizador { get; set; }
+        public Usuario Usuario { get; set; }
         public DateTime FechaTerminacionPublicacion { get; set; }
         private List<Articulo> _articulos;
 
@@ -39,7 +40,19 @@
         {
             ValidarNombre();
         }
-        public abstract decimal Monto();
+        public virtual decimal Monto()
+        {
+            decimal total = 0;
+            foreach (Articulo articulo in Articulos)
+            {
+                total += articulo.Precio;
+            }
+            return Math.Round(total, 2);
+        }
+        public abstract void AgregarOferta(Oferta oferta);
+        public abstract void FinalizarSubasta(Usuario finalizador);
+        public abstract void CerrarVenta(Cliente cliente);
+        public abstract void Ofertar(Oferta oferta);
         public override string ToString()
         {
             string aux = "";
@@ -53,10 +66,15 @@
                 $"Fecha de publicacion: {FechaPublicacion.ToString("d")}\n" +
                 $"Articulos: {aux}";
         }
-        public override bool Equals(object? obj)
+        public int CompareTo(Publicacion? other)
         {
-            Publicacion publicacion = obj as Publicacion;
-            return publicacion != null && Nombre.ToLower() == publicacion.Nombre.ToLower();
+            if (other is null)
+                return -1;
+            return FechaPublicacion.CompareTo(other.FechaPublicacion);
+        }
+        public bool Equals(Publicacion? other)
+        {
+            return other != null && string.Equals(Nombre.ToLower(), other.Nombre.ToLower());
         }
     }
 }

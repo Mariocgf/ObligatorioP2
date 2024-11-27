@@ -11,7 +11,7 @@ namespace Dominio
         private static Sistema _instancia;
 
         public List<Usuario> Usuarios { get { return _usuarios; } }
-        public List<Publicacion> Publicaciones { get { return _publicaciones; } }
+        public IEnumerable<Publicacion> Publicaciones { get { return _publicaciones; } }
         public List<Articulo> Articulos { get { return _articulos; } }
         public List<string> Categorias { get { return _categorias; } }
         public static Sistema Instancia
@@ -203,7 +203,9 @@ namespace Dominio
             }
             return null;
         }
-        public List<Publicacion> ObtenerPublicacionVentas()
+
+        //Obligatorio 2
+        public IEnumerable<Publicacion> ObtenerPublicacionesVentas()
         {
             List<Publicacion> aux = new List<Publicacion>();
             foreach (Publicacion publicacion in _publicaciones)
@@ -215,7 +217,7 @@ namespace Dominio
             }
             return aux;
         }
-        public List<Publicacion> ObtenerPublicacionSubasta()
+        public IEnumerable<Publicacion> ObtenerPublicacionesSubasta()
         {
             List<Publicacion> aux = new List<Publicacion>();
             foreach (Publicacion publicacion in _publicaciones)
@@ -227,23 +229,7 @@ namespace Dominio
             }
             return aux;
         }
-
-        public bool Login(string email, string contrasenia)
-        {
-            bool aux = false;
-            Usuario user = ObtenerUsuario(email);
-            if (user == null)
-            {
-                throw new Exception("E-UsuarioNoExistente:El usuario no existe :(");
-            }
-            if (user.Contrasenia != contrasenia)
-            {
-                throw new Exception("E-ContraseniaIncorrecta:La contraseña ingresada no es correcta.");
-            }
-            aux = true;
-            return aux;
-        }
-        public Venta ObtenerPublicacionVenta (int id)
+        public Venta? ObtenerPublicacionVenta(int id)
         {
             foreach (Publicacion publicacion in _publicaciones)
             {
@@ -252,27 +238,54 @@ namespace Dominio
             }
             return null;
         }
-        public void Comprar(Venta publicacion, Cliente cliente)
+        public Subasta ObtenerPublicacionSubasta(int id)
         {
-            if (!(publicacion.EstadoPublicacion == Publicacion.Estado.ABIERTA))
-                throw new Exception("E-PublicacionCerrada:Esta publicacion ya esta cerrada.");
-            if (publicacion.Monto() > cliente.Billetera)
-                throw new Exception("E-SaldoInsuficiente:Saldo insuficiente.");
-            publicacion.Cliente = cliente;
-            publicacion.EstadoPublicacion = Publicacion.Estado.CERRADA;
-            cliente.Billetera -= publicacion.Monto();
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Subasta && publicacion.Id == id)
+                    return (Subasta)publicacion;
+            }
+            return null;
         }
+        public bool Login(string email, string contrasenia)
+        {
+            Usuario user = ObtenerUsuario(email) ?? throw new Exception("E-UsuarioNoExistente:El usuario no existe.");
+            if (user.Contrasenia != contrasenia)
+            {
+                throw new Exception("E-ContraseniaIncorrecta:La contraseña ingresada no es correcta.");
+            }
+            return true;
+        }
+        public void Comprar(int idP, string email)
+        {
+            Venta? publicacion = ObtenerPublicacionVenta(idP);
+            Cliente? cliente = ObtenerUsuario(email) is Cliente ? (Cliente)ObtenerUsuario(email) : null;
+            if (cliente == null)
+                throw new Exception("E-CompraCliente:Solo el cliente puede realizar la compra");
+            publicacion.CerrarVenta(cliente);
+        }
+        public void Ofertar(int id, Cliente cliente, decimal monto)
+        {
+            Subasta publicacion = ObtenerPublicacionSubasta(id);
+            Oferta oferta = new Oferta(cliente, monto, DateTime.Now);
+            publicacion.Ofertar(oferta);
+        }
+        public void FinalizarSubasta(int id, Usuario finalizador)
+        {
+            Subasta subasta = ObtenerPublicacionSubasta(id);
+            subasta.FinalizarSubasta(finalizador);
+        }
+
         private void Precarga()
         {
             PrecargarArticulos();
             PrecargarUsuario();
             PrecargarPublicaciones();
         }
-
         private void PrecargarPublicaciones()
         {
             //  Casos de exito
-            AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.CERRADA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
+            AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
             AgregarPublicacion("Kit de Entretenimiento Electrónico", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [ObtenerArticulo(6), ObtenerArticulo(24), ObtenerArticulo(35)], false);
             AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(5), ObtenerArticulo(4), ObtenerArticulo(3)], true);
             AgregarPublicacion("Set Fotografía Profesional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(3), ObtenerArticulo(8), ObtenerArticulo(28)], false);

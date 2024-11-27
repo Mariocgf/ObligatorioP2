@@ -12,19 +12,29 @@ namespace Dominio
         private List<Publicacion> _publicaciones = new List<Publicacion>();
         private List<Articulo> _articulos = new List<Articulo>();
         private List<string> _categorias = new List<string>();
+        private static Sistema _instancia;
 
         public List<Usuario> Usuarios { get { return _usuarios; } }
-        public List<Publicacion> Publicaciones { get { return _publicaciones; } }
+        public IEnumerable<Publicacion> Publicaciones { get { return _publicaciones; } }
         public List<Articulo> Articulos { get { return _articulos; } }
         public List<string> Categorias { get { return _categorias; } }
+        public static Sistema Instancia
+        {
+            get
+            {
+                if (_instancia == null) _instancia = new Sistema();
+                return _instancia;
+            }
+        }
+
+        private Sistema()
+        {
+            Precarga();
+        }
 
         // Metodo de agregacion
-        public void AgregarCliente( string nombre, 
-                                    string apellido, 
-                                    string email, 
-                                    string contrasenia)
+        public void AgregarCliente(Usuario usuario)
         {
-            Usuario usuario = new Cliente(nombre, apellido, email, contrasenia);
             if (usuario == null)
             {
                 throw new Exception("E-UsuarioNull:El usuario ingresado es nulo.");
@@ -36,12 +46,8 @@ namespace Dominio
             }
             _usuarios.Add(usuario);
         }
-        public void AgregarAdministrador(string nombre,
-                                    string apellido,
-                                    string email,
-                                    string contrasenia)
+        public void AgregarAdministrador(Usuario usuario)
         {
-            Usuario usuario = new Administrador(nombre, apellido, email, contrasenia);
             if (usuario == null)
             {
                 throw new Exception("E-UsuarioNull:El usuario ingresado es nulo.");
@@ -53,10 +59,10 @@ namespace Dominio
             }
             _usuarios.Add(usuario);
         }
-        public void AgregarPublicacion( string nombre, 
-                                        Publicacion.Estado estado, 
-                                        DateTime fechaPublicacion, 
-                                        List<Articulo> articulos, 
+        public void AgregarPublicacion(string nombre,
+                                        Publicacion.Estado estado,
+                                        DateTime fechaPublicacion,
+                                        List<Articulo> articulos,
                                         bool enOferta)
         {
             if (articulos.Count == 0)
@@ -75,9 +81,9 @@ namespace Dominio
             publicacion.Validar();
             _publicaciones.Add(publicacion);
         }
-        public void AgregarPublicacion( string nombre, 
-                                        Publicacion.Estado estado, 
-                                        DateTime fechaPublicacion, 
+        public void AgregarPublicacion(string nombre,
+                                        Publicacion.Estado estado,
+                                        DateTime fechaPublicacion,
                                         List<Articulo> articulos)
         {
             if (articulos.Count == 0)
@@ -96,8 +102,8 @@ namespace Dominio
             publicacion.Validar();
             _publicaciones.Add(publicacion);
         }
-        public void AgregarArticulo( string nombre, 
-                                     string categoria, 
+        public void AgregarArticulo(string nombre,
+                                     string categoria,
                                      decimal precio)
         {
             Articulo articulo = new Articulo(nombre, categoria, precio);
@@ -127,6 +133,17 @@ namespace Dominio
             foreach (Usuario usuario in _usuarios)
             {
                 if (usuario.Email == email)
+                {
+                    return usuario;
+                }
+            }
+            return null;
+        }
+        public Usuario ObtenerUsuario(int id)
+        {
+            foreach (Usuario usuario in _usuarios)
+            {
+                if (usuario.Id == id)
                 {
                     return usuario;
                 }
@@ -170,9 +187,9 @@ namespace Dominio
         public List<Publicacion> ObtenerPublicacionesXFecha(DateTime fechaDesde, DateTime fechaHasta)
         {
             List<Publicacion> aux = new List<Publicacion>();
-            foreach(Publicacion publicacion in _publicaciones)
+            foreach (Publicacion publicacion in _publicaciones)
             {
-                if(publicacion.FechaPublicacion.Date > fechaDesde.Date && publicacion.FechaPublicacion.Date < fechaHasta.Date)
+                if (publicacion.FechaPublicacion.Date > fechaDesde.Date && publicacion.FechaPublicacion.Date < fechaHasta.Date)
                 {
                     aux.Add(publicacion);
                 }
@@ -190,19 +207,91 @@ namespace Dominio
             }
             return null;
         }
-        public void Precarga()
+
+        //Obligatorio 2
+        public IEnumerable<Publicacion> ObtenerPublicacionesVentas()
+        {
+            List<Publicacion> aux = new List<Publicacion>();
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Venta)
+                {
+                    aux.Add(publicacion);
+                }
+            }
+            return aux;
+        }
+        public IEnumerable<Publicacion> ObtenerPublicacionesSubasta()
+        {
+            List<Publicacion> aux = new List<Publicacion>();
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Subasta)
+                {
+                    aux.Add(publicacion);
+                }
+            }
+            return aux;
+        }
+        public Venta? ObtenerPublicacionVenta(int id)
+        {
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Venta && publicacion.Id == id)
+                    return (Venta)publicacion;
+            }
+            return null;
+        }
+        public Subasta ObtenerPublicacionSubasta(int id)
+        {
+            foreach (Publicacion publicacion in _publicaciones)
+            {
+                if (publicacion is Subasta && publicacion.Id == id)
+                    return (Subasta)publicacion;
+            }
+            return null;
+        }
+        public bool Login(string email, string contrasenia)
+        {
+            Usuario user = ObtenerUsuario(email) ?? throw new Exception("E-UsuarioNoExistente:El usuario no existe.");
+            if (user.Contrasenia != contrasenia)
+            {
+                throw new Exception("E-ContraseniaIncorrecta:La contraseña ingresada no es correcta.");
+            }
+            return true;
+        }
+        public void Comprar(int idP, string email)
+        {
+            Venta? publicacion = ObtenerPublicacionVenta(idP);
+            Cliente? cliente = ObtenerUsuario(email) is Cliente ? (Cliente)ObtenerUsuario(email) : null;
+            if (cliente == null)
+                throw new Exception("E-CompraCliente:Solo el cliente puede realizar la compra");
+            publicacion.CerrarVenta(cliente);
+        }
+        public void Ofertar(int id, Cliente cliente, decimal monto)
+        {
+            Subasta publicacion = ObtenerPublicacionSubasta(id);
+            Oferta oferta = new Oferta(cliente, monto, DateTime.Now);
+            publicacion.Ofertar(oferta);
+        }
+        public void FinalizarSubasta(int id, Usuario finalizador)
+        {
+            Subasta subasta = ObtenerPublicacionSubasta(id);
+            subasta.FinalizarSubasta(finalizador);
+        }
+
+        private void Precarga()
         {
             PrecargarArticulos();
             PrecargarUsuario();
             PrecargarPublicaciones();
         }
-
         private void PrecargarPublicaciones()
         {
             //  Casos de exito
             AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
             AgregarPublicacion("Kit de Entretenimiento Electrónico", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [ObtenerArticulo(6), ObtenerArticulo(24), ObtenerArticulo(35)], false);
-            AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(51), ObtenerArticulo(54), ObtenerArticulo(53)], true);
+            AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(5), ObtenerArticulo(4), ObtenerArticulo(3)], true);
             AgregarPublicacion("Set Fotografía Profesional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(3), ObtenerArticulo(8), ObtenerArticulo(28)], false);
             AgregarPublicacion("Kit de Cocina Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 22), [ObtenerArticulo(26), ObtenerArticulo(30), ObtenerArticulo(27)], true);
             AgregarPublicacion("Combo Tecnología para Oficina", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 18), [ObtenerArticulo(7), ObtenerArticulo(21), ObtenerArticulo(2)], false);
@@ -303,19 +392,19 @@ namespace Dominio
         private void PrecargarUsuario()
         {
             // Casos de exito
-            AgregarCliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123");
-            AgregarCliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023");
-            AgregarCliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1");
-            AgregarCliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!");
-            AgregarCliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024");
-            AgregarCliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456");
-            AgregarCliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789");
-            AgregarCliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$");
-            AgregarCliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!");
-            AgregarCliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024");
+            AgregarCliente(new Cliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123"));
+            AgregarCliente(new Cliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023"));
+            AgregarCliente(new Cliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1"));
+            AgregarCliente(new Cliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!"));
+            AgregarCliente(new Cliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024"));
+            AgregarCliente(new Cliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456"));
+            AgregarCliente(new Cliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789"));
+            AgregarCliente(new Cliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$"));
+            AgregarCliente(new Cliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!"));
+            AgregarCliente(new Cliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"));
 
-            AgregarAdministrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!");
-            AgregarAdministrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024");
+            AgregarAdministrador(new Administrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!"));
+            AgregarAdministrador(new Administrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024"));
 
             // Casos de error
             //AgregarUsuario("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"); El usuario ingresado ya esta registrado
@@ -336,6 +425,7 @@ namespace Dominio.Entidades
 {
     public class Administrador : Usuario
     {
+        public Administrador() { }
         public Administrador(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia) 
         { 
         }
@@ -450,24 +540,24 @@ namespace Dominio.Entidades
     public class Cliente : Usuario
     {
         public decimal Billetera { get; set; }
-
+        public Cliente() { }
         public Cliente(string nombre, string apellido, string email, string contrasenia) : base(nombre, apellido, email, contrasenia)
         {
             Billetera = 0;
         }
+        public void Deconstruct(out string nombre, out string apellido, out decimal billetera)
+        {
+            base.Deconstruct(out nombre, out apellido);
+            billetera = Billetera;
+        }
         public override void Depositar(decimal monto)
         {
-            if (monto < 0)
+            if (monto <= 0)
             {
-                throw new Exception("E-MontoNegativo:El monto a depositar no pude ser negativo");
+                throw new Exception("E-MontoNegativo:El monto a depositar no pude ser nulo o negativo");
             }
+
             Billetera += monto;
-        }
-        public override string ToString()
-        {
-            return $"" +
-                $"{base.ToString()}\n" +
-                $"Billetera: {Billetera}\n";
         }
     }
 }
@@ -486,12 +576,19 @@ namespace Dominio.Entidades
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
 
-        public Oferta (Cliente cliente, decimal monto, DateTime fecha)
+        public Oferta(Cliente cliente, decimal monto, DateTime fecha)
         {
-            Id = ++ s_idCont;
+            Id = ++s_idCont;
             Cliente = cliente;
             Monto = monto;
             Fecha = fecha;
+        }
+        public void Verificar()
+        {
+            if (Monto <= 0)
+                throw new Exception("El monto ofertado es nulo o negativo");
+            if (Cliente == null)
+                throw new Exception("El cliente es nulo");
         }
     }
 }
@@ -502,7 +599,7 @@ Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Publicacion.c
 ***********************************
 namespace Dominio.Entidades
 {
-    public abstract class Publicacion
+    public abstract class Publicacion : IComparable<Publicacion>, IEquatable<Publicacion>
     {
         public enum Estado
         {
@@ -516,7 +613,8 @@ namespace Dominio.Entidades
         public Estado EstadoPublicacion { get; set; }
         public DateTime FechaPublicacion { get; set; }
         public Cliente Cliente { get; set; }
-        public Usuario Usuario { get; set; } 
+        public Usuario Finalizador { get; set; }
+        public Usuario Usuario { get; set; }
         public DateTime FechaTerminacionPublicacion { get; set; }
         private List<Articulo> _articulos;
 
@@ -541,18 +639,41 @@ namespace Dominio.Entidades
         {
             ValidarNombre();
         }
-        public abstract decimal Monto();
+        public virtual decimal Monto()
+        {
+            decimal total = 0;
+            foreach (Articulo articulo in Articulos)
+            {
+                total += articulo.Precio;
+            }
+            return Math.Round(total, 2);
+        }
+        public abstract void AgregarOferta(Oferta oferta);
+        public abstract void FinalizarSubasta(Usuario finalizador);
+        public abstract void CerrarVenta(Cliente cliente);
+        public abstract void Ofertar(Oferta oferta);
         public override string ToString()
         {
+            string aux = "";
+            foreach (Articulo articulo in _articulos)
+            {
+                aux += articulo.Nombre + " ";
+            }
             return $"Publicacion {Id}\n" +
                 $"Nombre: {Nombre}\n" +
                 $"Estado: {EstadoPublicacion}\n" +
-                $"Fecha de publicacion: {FechaPublicacion.ToString("d")}";
+                $"Fecha de publicacion: {FechaPublicacion.ToString("d")}\n" +
+                $"Articulos: {aux}";
         }
-        public override bool Equals(object? obj)
+        public int CompareTo(Publicacion? other)
         {
-            Publicacion publicacion = obj as Publicacion;
-            return publicacion != null && Nombre.ToLower() == publicacion.Nombre.ToLower();
+            if (other is null)
+                return -1;
+            return FechaPublicacion.CompareTo(other.FechaPublicacion);
+        }
+        public bool Equals(Publicacion? other)
+        {
+            return other != null && string.Equals(Nombre.ToLower(), other.Nombre.ToLower());
         }
     }
 }
@@ -565,17 +686,45 @@ namespace Dominio.Entidades
 {
     public class Subasta : Publicacion
     {
-        public Oferta Oferta { get; set; }
+        private List<Oferta> _listaOferta = new List<Oferta>();
 
-        public override decimal Monto()
-        {
-            throw new NotImplementedException();
-        }
+        public List<Oferta> ListaOferta { get { return _listaOferta; } }
+
+
         public Subasta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos) : base(nombre, estado, fechaPublicacion, articulos)
         {
         }
-
-        
+        public override void AgregarOferta(Oferta oferta)
+        {
+            _listaOferta.Insert(0, oferta);
+        }
+        public override void CerrarVenta(Cliente cliente) { }
+        public override void Ofertar(Oferta oferta)
+        {
+            oferta.Verificar();
+            if (_listaOferta.Count() > 0 && oferta.Monto <= _listaOferta[0].Monto)
+                throw new Exception("El monto ofertado es menor o igual al mayor postor.");
+            if (oferta.Monto < base.Monto())
+                throw new Exception("El monto es menor al precio base");
+            AgregarOferta(oferta);
+        }
+        public override void FinalizarSubasta(Usuario finalizador)
+        {
+            foreach (Oferta oferta in _listaOferta)
+            {
+                if (oferta.Cliente.Billetera >= oferta.Monto)
+                {
+                    base.EstadoPublicacion = Publicacion.Estado.CERRADA;
+                    base.Cliente = oferta.Cliente;
+                    base.Finalizador = finalizador;
+                    base.Cliente.Billetera -= oferta.Monto;
+                    break;
+                }
+            }
+            if (base.Cliente is null)
+                base.EstadoPublicacion = Publicacion.Estado.CANCELADA;
+            base.FechaTerminacionPublicacion = DateTime.Now;
+        }
     }
 }
 
@@ -583,9 +732,11 @@ namespace Dominio.Entidades
 Archivo: Usuario.cs
 Carpeta: C:\Users\mario\source\repos\Obligatorio\Dominio\Entidades\Usuario.cs
 ***********************************
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Dominio.Entidades
 {
-    public abstract class Usuario
+    public abstract class Usuario : IEquatable<Usuario>
     {
         private static int IdCount { get; set; }
         public int Id { get; set; }
@@ -594,6 +745,10 @@ namespace Dominio.Entidades
         public string Email { get; set; }
         public string Contrasenia { get; set; }
 
+        public Usuario()
+        {
+            Id = ++IdCount;
+        }
         public Usuario(string nombre, string apellido, string email, string contrasenia)
         {
             Id = ++IdCount;
@@ -602,7 +757,11 @@ namespace Dominio.Entidades
             Email = email;
             Contrasenia = contrasenia;
         }
-
+        public void Deconstruct(out string nombre, out string apellido)
+        {
+            nombre = Nombre;
+            apellido = Apellido;
+        }
         public virtual void ValidarEmailFormato()
         {
             bool arroba = false;
@@ -620,10 +779,22 @@ namespace Dominio.Entidades
         }
         public virtual void ValidarContrasenia()
         {
+            bool number = false;
+            bool word = false;
+            int[] caracteresEspeciales = [32, 193, 201, 205, 209, 211, 218, 225, 233, 237, 241, 243, 250];
             if (string.IsNullOrEmpty(Contrasenia))
-            {
                 throw new Exception("E-ContraseniaEmpty:La contraseña no puede estar vacia");
+            if (Contrasenia.Length < 8)
+                throw new Exception("E-ContraseniaTamanio:La contraseña debe tener como minimo 8 caracteres.");
+            foreach (char elem in Contrasenia)
+            {
+                if ((caracteresEspeciales.Contains((int)elem) || ((int)elem >= 38 && (int)elem <= 46) || ((int)elem >= 65 && (int)elem <= 90) || ((int)elem >= 97 && (int)elem <= 122)) && !word)
+                    word = true;
+                if (((int)elem <= 57 && (int)elem >= 48) && !number)
+                    number = true;
             }
+            if (!number || !word)
+                throw new Exception("E-ContraseniaNoNumero:La contraseña debe ser alfanumerica");
         }
         public virtual void ValidarCampo(string data, string tipo)
         {
@@ -642,12 +813,16 @@ namespace Dominio.Entidades
         public abstract void Depositar(decimal monto);
         public override string ToString()
         {
-            return $"Usuario: {Nombre} {Apellido}\nEmail: {Email}";
+            return $"{Nombre} {Apellido}";
         }
         public override bool Equals(object? obj)
         {
             Usuario usuario = obj as Usuario;
             return usuario != null && Email.ToLower() == usuario.Email.ToLower();
+        }
+        public bool Equals(Usuario other)
+        {
+            return other != null && Email.Equals(other.Email);
         }
     }
 }
@@ -662,24 +837,31 @@ namespace Dominio.Entidades
     {
         public bool EnOfertaRelampago { get; set; }
 
-        public Venta(string nombre, Estado estado, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estado, fechaPublicacion, articulos)
+        public Venta(string nombre, Estado estadoPublicacion, DateTime fechaPublicacion, List<Articulo> articulos, bool enOferta) : base(nombre, estadoPublicacion, fechaPublicacion, articulos)
         {
             EnOfertaRelampago = enOferta;
         }
         public override decimal Monto()
         {
-            decimal total = 0;
-            foreach (Articulo articulo in base.Articulos)
-            {
-                total += articulo.Precio;
-            }
+            decimal total = base.Monto();
             if (EnOfertaRelampago)
             {
-                return total - total * 0.20m;
+                total -= total * 0.20m;
             }
-            return total;
+            return Math.Round(total, 2);
         }
-
+        public override void CerrarVenta(Cliente cliente)
+        {
+            if (base.EstadoPublicacion != Estado.ABIERTA)
+                throw new Exception("E-PublicacionCerrada:Esta publicacion ya esta cerrada.");
+            if (Monto() > cliente.Billetera)
+                throw new Exception("E-SaldoInsuficiente:Saldo insuficiente.");
+            base.Cliente = cliente;
+            base.Finalizador = cliente;
+            base.EstadoPublicacion = Publicacion.Estado.CERRADA;
+            base.FechaTerminacionPublicacion = DateTime.Now;
+            cliente.Billetera -= Monto();
+        }
         public override string ToString()
         {
             return $"" +
@@ -687,6 +869,371 @@ namespace Dominio.Entidades
                 $"Monto: {Monto()}\n" +
                 $"En oferta: {(EnOfertaRelampago ? "Si" : "No")}\n";
         }
+        public override void AgregarOferta(Oferta oferta) { }
+        public override void FinalizarSubasta(Usuario finalizador) { }
+        public override void Ofertar(Oferta oferta) { }
+    }
+}
 
+***********************************
+Archivo: LoginController.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Controllers\LoginController.cs
+***********************************
+using Dominio;
+using Dominio.Entidades;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApp.Controllers
+{
+    public class LoginController : Controller
+    {
+        enum Tipo
+        {
+            Iniciar,
+            Registrar
+        }
+        enum Rol
+        {
+            ADMIN,
+            CLIENTE
+        }
+        Sistema _sistema = Sistema.Instancia;
+        [HttpGet]
+        public IActionResult Index(string msj)
+        {
+            string? session = HttpContext.Session.GetString("email");
+            if (!string.IsNullOrEmpty(session))
+                return Redirect("/publicacion");
+            ViewBag.tipo = Tipo.Iniciar;
+            if (!string.IsNullOrEmpty(msj))
+            {
+                string[] values = msj.Split(':');
+                if (values.Length > 1)
+                {
+                    ViewBag.msjTipo = values[0];
+                    ViewBag.msj = values[1];
+                }
+                else
+                {
+                    ViewBag.msj = msj;
+                }
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(string email, string contrasenia)
+        {
+            try
+            {
+                if (_sistema.Login(email, contrasenia))
+                    HttpContext.Session.SetString("email", email);
+                Usuario aux = _sistema.ObtenerUsuario(email);
+                var (nombre, apellido) = aux;
+                HttpContext.Session.SetString("nombre", nombre);
+                HttpContext.Session.SetString("apellido", apellido);
+                if (aux is Cliente cliente)
+                {
+                    decimal billetera = cliente.Billetera;
+                    HttpContext.Session.SetString("billetera", billetera.ToString());
+                    HttpContext.Session.SetString("rol", Rol.CLIENTE.ToString());
+                }
+                if (aux is Administrador)
+                    HttpContext.Session.SetString("rol", Rol.ADMIN.ToString());
+                return Redirect("/publicacion");
+            }
+            catch (Exception )
+            {
+                ViewBag.msj = "Credenciales incorrectas.";
+                ViewBag.tipo = Tipo.Iniciar;
+            }
+            return View("index");
+        }
+        [HttpGet]
+        public IActionResult Registrar()
+        {
+            string? session = HttpContext.Session.GetString("email");
+            if (!string.IsNullOrEmpty(session))
+                return Redirect("/publicacion");
+            ViewBag.tipo = Tipo.Registrar;
+            return View("index", new Cliente());
+        }
+
+        [HttpPost]
+        public IActionResult Registrar(Cliente cliente)
+        {
+            try
+            {
+                _sistema.AgregarCliente(cliente);
+                return RedirectToAction("index", new { msj = "success:Registro exitoso." });
+            }
+            catch (Exception error)
+            {
+                ViewBag.msj = error.Message.Split(":")[1];
+            }
+            ViewBag.tipo = Tipo.Registrar;
+
+            return View("index", cliente);
+        }
+
+        [HttpGet]
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Clear();
+            return Redirect("/");
+        }
+    }
+}
+
+***********************************
+Archivo: PublicacionController.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Controllers\PublicacionController.cs
+***********************************
+using Dominio;
+using Dominio.Entidades;
+using Microsoft.AspNetCore.Mvc;
+using WebApp.Filtros;
+
+namespace WebApp.Controllers
+{
+    [Login]
+    public class PublicacionController : Controller
+    {
+        enum PublicacionView
+        {
+            Todas,
+            Subasta,
+            Ventas
+        }
+        Sistema _sistema = Sistema.Instancia;
+        [Client]
+        [HttpGet]
+        public IActionResult Index(string msj)
+        {
+            ViewBag.publicaciones = _sistema.Publicaciones;
+            ViewBag.publicacionView = PublicacionView.Todas;
+            if (!string.IsNullOrEmpty(msj))
+            {
+                string[] values = msj.Split(':');
+                if (values.Length > 1)
+                {
+                    ViewBag.msjTipo = values[0];
+                    ViewBag.msj = values[1];
+                }
+                else
+                {
+                    ViewBag.msj = msj;
+                }
+            }
+            return View();
+        }
+        [Client]
+        [HttpGet]
+        public IActionResult MostrarPublicacionVentas()
+        {
+            ViewBag.publicaciones = _sistema.ObtenerPublicacionesVentas();
+            ViewBag.publicacionView = PublicacionView.Ventas;
+            return View("index");
+        }
+
+        [HttpGet]
+        public IActionResult MostrarPublicacionSubasta()
+        {
+            List<Publicacion> subasta = _sistema.ObtenerPublicacionesSubasta();
+            if (HttpContext.Session.GetString("rol") == "ADMIN")
+                subasta.Sort();
+            ViewBag.publicaciones = subasta;
+            ViewBag.publicacionView = PublicacionView.Subasta;
+            return View("index");
+        }
+
+        [Client]
+        [HttpGet]
+        public IActionResult Comprar(int id)
+        {
+            string email = HttpContext.Session.GetString("email");
+            Cliente cliente = (Cliente)_sistema.ObtenerUsuario(email);
+            try
+            {
+                _sistema.Comprar(id, email);
+                HttpContext.Session.SetString("billetera", cliente.Billetera.ToString());
+                ViewBag.msj = "success:Compra realizada correctamente";
+            }
+            catch (Exception error)
+            {
+                ViewBag.msj = error.Message.Split(":")[1];
+            }
+            return RedirectToAction("index", new { ViewBag.msj });
+        }
+
+        [Client]
+        [HttpPost]
+        public IActionResult Ofertar(int id, decimal monto)
+        {
+            string email = HttpContext.Session.GetString("email");
+            Cliente cliente = (Cliente)_sistema.ObtenerUsuario(email);
+            try
+            {
+                _sistema.Ofertar(id, cliente, monto);
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                ViewBag.msj = e.Message;
+            }
+            return RedirectToAction("index", new { ViewBag.msj });
+        }
+
+        [HttpGet]
+        [Admin]
+        public IActionResult Editar(int id)
+        {
+            Publicacion publicacion = _sistema.ObtenerPublicacion(id);
+            if (publicacion is Venta)
+                ViewBag.publicacion = (Venta)publicacion;
+            if (publicacion is Subasta)
+                ViewBag.publicacion = (Subasta)publicacion;
+            return View();
+        }
+
+        [HttpGet]
+        [Admin]
+        public IActionResult Finalizar(int id)
+        {
+            Usuario finalizador = _sistema.ObtenerUsuario(HttpContext.Session.GetString("email"));
+            _sistema.FinalizarSubasta(id, finalizador);
+            return Redirect("/publicacion");
+        }
+    }
+}
+
+***********************************
+Archivo: UsuarioController.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Controllers\UsuarioController.cs
+***********************************
+using Dominio;
+using Dominio.Entidades;
+using Microsoft.AspNetCore.Mvc;
+using WebApp.Filtros;
+
+namespace WebApp.Controllers
+{
+    [Login]
+    [Client]
+    public class UsuarioController : Controller
+    {
+        Sistema _sistema = Sistema.Instancia;
+        [HttpGet]
+        public IActionResult Index(string msj)
+        {
+            if (!string.IsNullOrEmpty(msj))
+            {
+                string[] values = msj.Split(':');
+                if (values.Length > 1)
+                {
+                    ViewBag.msjTipo = values[0];
+                    ViewBag.msj = values[1];
+                }
+                else
+                {
+                    ViewBag.msj = msj;
+                }
+            }
+            return View();
+        }
+        [HttpGet]
+        [HttpPost]
+        public IActionResult Depositar(decimal monto)
+        {
+            string email = HttpContext.Session.GetString("email");
+            string rol = HttpContext.Session.GetString("rol");
+            if (rol == "ADMIN")
+                return Redirect("/");
+            try
+            {
+                Cliente cliente = (Cliente)_sistema.ObtenerUsuario(email);
+                cliente.Depositar(monto);
+                HttpContext.Session.SetString("billetera", cliente.Billetera.ToString());
+                ViewBag.msj = "success:Deposito realizado correctamente";
+            }
+            catch (Exception error)
+            {
+                ViewBag.msj = error.Message.Split(":")[1];
+            }
+            return RedirectToAction("index", new { msj = ViewBag.msj });
+        }
+
+    }
+}
+
+***********************************
+Archivo: Admin.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Filtros\Admin.cs
+***********************************
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace WebApp.Filtros
+{
+    public class Admin : Attribute, IAuthorizationFilter
+    {
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (context.HttpContext.Session.GetString("rol") != "ADMIN")
+                context.Result = new RedirectResult("/");
+        }
+    }
+}
+
+***********************************
+Archivo: Client.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Filtros\Client.cs
+***********************************
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApp.Filtros
+{
+    public class Client : Attribute, IAuthorizationFilter
+    {
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (context.HttpContext.Session.GetString("rol") == "ADMIN")
+                context.Result = new RedirectResult("/publicacion/MostrarPublicacionSubasta");
+        }
+    }
+}
+
+***********************************
+Archivo: Login.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Filtros\Login.cs
+***********************************
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace WebApp.Filtros
+{
+    public class Login : Attribute, IAuthorizationFilter
+    {
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (string.IsNullOrEmpty(context.HttpContext.Session.GetString("email")))
+                context.Result = new RedirectResult("/");
+        }
+    }
+}
+
+***********************************
+Archivo: ErrorViewModel.cs
+Carpeta: C:\Users\mario\source\repos\Obligatorio\WebApp\Models\ErrorViewModel.cs
+***********************************
+namespace WebApp.Models
+{
+    public class ErrorViewModel
+    {
+        public string? RequestId { get; set; }
+
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }

@@ -1,17 +1,18 @@
 ﻿using Dominio;
 using Dominio.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Filtros;
 
 namespace WebApp.Controllers
 {
+    [Login]
+    [Client]
     public class UsuarioController : Controller
     {
         Sistema _sistema = Sistema.Instancia;
         [HttpGet]
         public IActionResult Index(string msj)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("email")))
-                return Redirect("/");
             if (!string.IsNullOrEmpty(msj))
             {
                 string[] values = msj.Split(':');
@@ -28,12 +29,12 @@ namespace WebApp.Controllers
             return View();
         }
         [HttpGet]
-
         [HttpPost]
         public IActionResult Depositar(decimal monto)
         {
             string email = HttpContext.Session.GetString("email");
-            if(string.IsNullOrEmpty(email))
+            string rol = HttpContext.Session.GetString("rol");
+            if (rol == "ADMIN")
                 return Redirect("/");
             try
             {
@@ -46,7 +47,7 @@ namespace WebApp.Controllers
             {
                 ViewBag.msj = error.Message.Split(":")[1];
             }
-            return RedirectToAction("index", new {msj = ViewBag.msj});
+            return RedirectToAction("index", new { msj = ViewBag.msj });
         }
 
     }

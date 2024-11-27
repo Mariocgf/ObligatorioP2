@@ -12,11 +12,16 @@ namespace WebApp.Controllers
             Iniciar,
             Registrar
         }
+        enum Rol
+        {
+            ADMIN,
+            CLIENTE
+        }
         Sistema _sistema = Sistema.Instancia;
         [HttpGet]
         public IActionResult Index(string msj)
         {
-            string session = HttpContext.Session.GetString("email");
+            string? session = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(session))
                 return Redirect("/publicacion");
             ViewBag.tipo = Tipo.Iniciar;
@@ -44,19 +49,22 @@ namespace WebApp.Controllers
                 if (_sistema.Login(email, contrasenia))
                     HttpContext.Session.SetString("email", email);
                 Usuario aux = _sistema.ObtenerUsuario(email);
-                if (aux is Cliente)
+                var (nombre, apellido) = aux;
+                HttpContext.Session.SetString("nombre", nombre);
+                HttpContext.Session.SetString("apellido", apellido);
+                if (aux is Cliente cliente)
                 {
-                    Cliente cliente = (Cliente)aux;
-                    var (nombre, apellido,correo, billetera) = cliente;
-                    HttpContext.Session.SetString("nombre", nombre);
-                    HttpContext.Session.SetString("apellido", apellido);
+                    decimal billetera = cliente.Billetera;
                     HttpContext.Session.SetString("billetera", billetera.ToString());
+                    HttpContext.Session.SetString("rol", Rol.CLIENTE.ToString());
                 }
+                if (aux is Administrador)
+                    HttpContext.Session.SetString("rol", Rol.ADMIN.ToString());
                 return Redirect("/publicacion");
             }
-            catch (Exception error)
+            catch (Exception )
             {
-                ViewBag.msj = error.Message.Split(":")[1];
+                ViewBag.msj = "Credenciales incorrectas.";
                 ViewBag.tipo = Tipo.Iniciar;
             }
             return View("index");
@@ -64,7 +72,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Registrar()
         {
-            string session = HttpContext.Session.GetString("email");
+            string? session = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(session))
                 return Redirect("/publicacion");
             ViewBag.tipo = Tipo.Registrar;

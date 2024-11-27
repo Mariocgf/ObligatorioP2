@@ -7,7 +7,7 @@ private void PrecargarPublicaciones()
 //  Casos de exito
 AgregarPublicacion("Combo Oficina Moderna", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 15), [ObtenerArticulo(7), ObtenerArticulo(12), ObtenerArticulo(17)], true);
 AgregarPublicacion("Kit de Entretenimiento Electrónico", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 5), [ObtenerArticulo(6), ObtenerArticulo(24), ObtenerArticulo(35)], false);
-AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(51), ObtenerArticulo(54), ObtenerArticulo(53)], true);
+AgregarPublicacion("Paquete de Dormitorio Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 27), [ObtenerArticulo(5), ObtenerArticulo(4), ObtenerArticulo(3)], true);
 AgregarPublicacion("Set Fotografía Profesional", Publicacion.Estado.ABIERTA, new DateTime(2024, 10, 2), [ObtenerArticulo(3), ObtenerArticulo(8), ObtenerArticulo(28)], false);
 AgregarPublicacion("Kit de Cocina Completo", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 22), [ObtenerArticulo(26), ObtenerArticulo(30), ObtenerArticulo(27)], true);
 AgregarPublicacion("Combo Tecnología para Oficina", Publicacion.Estado.ABIERTA, new DateTime(2024, 9, 18), [ObtenerArticulo(7), ObtenerArticulo(21), ObtenerArticulo(2)], false);
@@ -118,19 +118,19 @@ private void PrecargarUsuario()
 
 {
 // Casos de exito
-AgregarCliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123");
-AgregarCliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023");
-AgregarCliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1");
-AgregarCliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!");
-AgregarCliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024");
-AgregarCliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456");
-AgregarCliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789");
-AgregarCliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$");
-AgregarCliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!");
-AgregarCliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024");
+AgregarCliente(new Cliente("Carlos", "Martínez", "carlos.martinez@gmail.com", "Contraseña123"));
+AgregarCliente(new Cliente("Ana", "López", "ana.lopez@yahoo.com", "Segura2023"));
+AgregarCliente(new Cliente("Luis", "Fernández", "luis.fernandez@hotmail.com", "ClaveSegura#1"));
+AgregarCliente(new Cliente("Marta", "González", "marta.gonzalez@outlook.com", "Passw0rd!"));
+AgregarCliente(new Cliente("Javier", "Pérez", "javier.perez@correo.com", "ContraseñaFuerte@2024"));
+AgregarCliente(new Cliente("Laura", "Sánchez", "laura.sanchez@gmail.com", "Acceso*456"));
+AgregarCliente(new Cliente("David", "Hernández", "david.hernandez@yahoo.com", "MiClave789"));
+AgregarCliente(new Cliente("Sofía", "Ruiz", "sofia.ruiz@hotmail.com", "Sofia123$"));
+AgregarCliente(new Cliente("Alberto", "Ramírez", "alberto.ramirez@outlook.com", "Ramirez2024!"));
+AgregarCliente(new Cliente("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"));
 
-AgregarAdministrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!");
-AgregarAdministrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024");
+AgregarAdministrador(new Administrador("Alberto", "Gomez", "alberto.gomez@outlook.com", "Ramirez2024!"));
+AgregarAdministrador(new Administrador("Paula", "Perez", "paula.perez@correo.com", "PaulaSegura#2024"));
 
 // Casos de error
 //AgregarUsuario("Paula", "Castro", "paula.castro@correo.com", "PaulaSegura#2024"); El usuario ingresado ya esta registrado
