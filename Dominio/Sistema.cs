@@ -227,6 +227,7 @@ namespace Dominio
                     aux.Add(publicacion);
                 }
             }
+            aux.Sort();
             return aux;
         }
         public Venta? ObtenerPublicacionVenta(int id)

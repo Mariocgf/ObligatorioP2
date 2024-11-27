@@ -48,10 +48,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult MostrarPublicacionSubasta()
         {
-            List<Publicacion> subasta = _sistema.ObtenerPublicacionesSubasta();
-            if (HttpContext.Session.GetString("rol") == "ADMIN")
-                subasta.Sort();
-            ViewBag.publicaciones = subasta;
+            ViewBag.publicaciones = _sistema.ObtenerPublicacionesSubasta();
             ViewBag.publicacionView = PublicacionView.Subasta;
             return View("index");
         }
