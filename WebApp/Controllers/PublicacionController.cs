@@ -95,7 +95,8 @@ namespace WebApp.Controllers
             try
             {
                 _sistema.Ofertar(id, cliente, monto);
-                return RedirectToAction("Index");
+                ViewBag.msj = "success:Oferta realizada correctamente";
+                return RedirectToAction("Index", new { ViewBag.msj });
             }
             catch (Exception e)
             {
