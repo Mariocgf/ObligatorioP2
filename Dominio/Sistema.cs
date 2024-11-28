@@ -239,7 +239,7 @@ namespace Dominio
             }
             return null;
         }
-        public Subasta ObtenerPublicacionSubasta(int id)
+        public Subasta? ObtenerPublicacionSubasta(int id)
         {
             foreach (Publicacion publicacion in _publicaciones)
             {
@@ -263,17 +263,23 @@ namespace Dominio
             Cliente? cliente = ObtenerUsuario(email) is Cliente ? (Cliente)ObtenerUsuario(email) : null;
             if (cliente == null)
                 throw new Exception("E-CompraCliente:Solo el cliente puede realizar la compra");
+            if (publicacion == null)
+                throw new Exception("E-PublicacionNF:La publicacion a comprar no se encontro");
             publicacion.CerrarVenta(cliente);
         }
         public void Ofertar(int id, Cliente cliente, decimal monto)
         {
-            Subasta publicacion = ObtenerPublicacionSubasta(id);
+            Subasta? publicacion = ObtenerPublicacionSubasta(id);
             Oferta oferta = new Oferta(cliente, monto, DateTime.Now);
+            if (publicacion == null)
+                throw new Exception("E-PublicacionNF:La publicacion a comprar no se encontro");
             publicacion.Ofertar(oferta);
         }
         public void FinalizarSubasta(int id, Usuario finalizador)
         {
-            Subasta subasta = ObtenerPublicacionSubasta(id);
+            Subasta? subasta = ObtenerPublicacionSubasta(id);
+            if (subasta == null)
+                throw new Exception("E-SubastaNF:Subasta no encontrada");
             subasta.FinalizarSubasta(finalizador);
         }
 

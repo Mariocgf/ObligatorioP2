@@ -2,6 +2,7 @@
 using Dominio.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Filtros;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebApp.Controllers
 {
@@ -46,10 +47,23 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult MostrarPublicacionSubasta()
+        public IActionResult MostrarPublicacionSubasta(string msj)
         {
             ViewBag.publicaciones = _sistema.ObtenerPublicacionesSubasta();
             ViewBag.publicacionView = PublicacionView.Subasta;
+            if (!string.IsNullOrEmpty(msj))
+            {
+                string[] values = msj.Split(':');
+                if (values.Length > 1)
+                {
+                    ViewBag.msjTipo = values[0];
+                    ViewBag.msj = values[1];
+                }
+                else
+                {
+                    ViewBag.msj = msj;
+                }
+            }
             return View("index");
         }
 
@@ -107,8 +121,16 @@ namespace WebApp.Controllers
         public IActionResult Finalizar(int id)
         {
             Usuario finalizador = _sistema.ObtenerUsuario(HttpContext.Session.GetString("email"));
-            _sistema.FinalizarSubasta(id, finalizador);
-            return Redirect("/publicacion");
+            try
+            {
+                _sistema.FinalizarSubasta(id, finalizador);
+                return Redirect("/publicacion");
+            }
+            catch (Exception e)
+            {
+                ViewBag.msj = e.Message.Split(":")[1];
+            }
+            return RedirectToAction("MostrarPublicacionSubasta", new { ViewBag.msj });
         }
     }
 }
